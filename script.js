@@ -15,12 +15,14 @@ const districts = [
 ];
 
 const STORAGE_KEY = "dubaiEstateProperties";
+const LEADS_STORAGE_KEY = "dubaiEstateLeads";
 const WHATSAPP_NUMBER = "971502791555";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 const config = window.DUBAI_ESTATE_CONFIG || {};
 const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KEY && window.supabase);
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
 let properties = [];
+let activeAssistantProfile = { budget: null, goal: "", district: "" };
 
 const formatMoney = (value) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value || 0));
 
@@ -76,6 +78,7 @@ function propertyCard(property) {
   const area = escapeHtml(property.area);
   const bedrooms = property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`;
   const handover = escapeHtml(property.handover || "по запросу");
+  const id = escapeHtml(property.id);
   return `
     <article class="property-card">
       <div class="card-media">
@@ -89,18 +92,43 @@ function propertyCard(property) {
         <div><p class="location">${district}</p><h3>${title}</h3></div>
         <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${roi} ROI</span></div>
         <div class="specs"><span>${area} м2</span><span>${bedrooms}</span><span>${handover}</span></div>
-        <div class="card-actions"><a class="primary" href="#tour">Смотреть 3D-тур</a><a class="secondary" href="#company">Подробнее</a></div>
+        <div class="card-actions"><button class="primary" type="button" data-open-property="${id}">Подробнее</button><a class="secondary" href="${whatsappLink(`Здравствуйте! Интересует объект ${property.title}.`) }" target="_blank" rel="noreferrer">WhatsApp</a></div>
       </div>
     </article>
   `;
 }
+function getFilteredProperties() {
+  const district = document.querySelector("#districtFilter")?.value || "Все районы";
+  const type = document.querySelector("#typeFilter")?.value || "Любой";
+  const developer = document.querySelector("#developerFilter")?.value || "Любой";
+  const priceFrom = Number(document.querySelector("#priceFrom")?.value || 0);
+  const priceTo = Number(document.querySelector("#priceTo")?.value || Number.MAX_SAFE_INTEGER);
+  const tourOnly = document.querySelector("#tourOnly")?.classList.contains("active") || false;
+  const installmentOnly = document.querySelector("#installmentOnly")?.classList.contains("active") || false;
+  return properties.filter((property) => {
+    const price = Number(property.price || 0);
+    return (district === "Все районы" || property.district === district)
+      && (type === "Любой" || String(property.type).toLowerCase().includes(type.toLowerCase()))
+      && (developer === "Любой" || property.developer === developer)
+      && price >= priceFrom
+      && price <= priceTo
+      && (!tourOnly || property.tour)
+      && (!installmentOnly || property.installment);
+  });
+}
+
+function bindPropertyActions(scope = document) {
+  scope.querySelectorAll("[data-open-property]").forEach((button) => {
+    button.addEventListener("click", () => openPropertyModal(button.dataset.openProperty));
+  });
+}
 
 function renderProperties() {
-  const district = document.querySelector("#districtFilter")?.value || "Все районы";
-  const tourOnly = document.querySelector("#tourOnly")?.classList.contains("active") || false;
-  const filtered = properties.filter((property) => (district === "Все районы" || property.district === district) && (!tourOnly || property.tour));
+  const filtered = getFilteredProperties();
   document.querySelector("#catalogGrid").innerHTML = filtered.map(propertyCard).join("");
   document.querySelector("#bestGrid").innerHTML = properties.slice(0, 3).map(propertyCard).join("");
+  bindPropertyActions(document.querySelector("#catalogGrid"));
+  bindPropertyActions(document.querySelector("#bestGrid"));
   const map = document.querySelector("#mapPins");
   map.querySelectorAll(".pin").forEach((pin) => pin.remove());
   filtered.forEach((property) => {
@@ -110,10 +138,10 @@ function renderProperties() {
     pin.style.left = `${property.x}%`;
     pin.style.top = `${property.y}%`;
     pin.textContent = formatMoney(property.price).replace(",000", "k");
+    pin.addEventListener("click", () => openPropertyModal(property.id));
     map.appendChild(pin);
   });
 }
-
 document.querySelector("#districtGrid").innerHTML = districts.map((district) => `
   <article class="district-card">
     <img src="${district.image}" alt="${district.name}" loading="lazy">
@@ -129,11 +157,11 @@ document.querySelector("#districtGrid").innerHTML = districts.map((district) => 
   </article>
 `).join("");
 
-document.querySelector("#districtFilter").addEventListener("change", renderProperties);
-document.querySelector("#tourOnly").addEventListener("click", (event) => {
+document.querySelectorAll("#districtFilter, #typeFilter, #developerFilter, #priceFrom, #priceTo").forEach((control) => control.addEventListener("input", renderProperties));
+document.querySelectorAll("#tourOnly, #installmentOnly").forEach((button) => button.addEventListener("click", (event) => {
   event.currentTarget.classList.toggle("active");
   renderProperties();
-});
+}));
 
 function loadTour() {
   const tourView = document.querySelector("#tourView");
@@ -168,6 +196,72 @@ function safeImageUrl(value) {
 function whatsappLink(message = "") {
   const text = message ? `?text=${encodeURIComponent(message)}` : "";
   return `${WHATSAPP_URL}${text}`;
+}
+
+
+function propertyById(id) {
+  return properties.find((item) => String(item.id) === String(id));
+}
+
+function modalGallery(property) {
+  const images = [property.image, ...(property.gallery || [])].filter(Boolean);
+  return images.length ? images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy">`).join("") : `<img src="${safeImageUrl(DEFAULT_PROPERTIES[0].image)}" alt="${escapeHtml(property.title)}" loading="lazy">`;
+}
+
+function openPropertyModal(id) {
+  const property = propertyById(id);
+  if (!property) return;
+  const modal = document.querySelector("#propertyModal");
+  const content = document.querySelector("#modalContent");
+  const details = [property.district, property.type, property.developer, property.handover].filter(Boolean).map(escapeHtml).join(" · ");
+  content.innerHTML = `
+    <div class="modal-gallery">${modalGallery(property)}</div>
+    <div class="modal-body">
+      <p class="label">${escapeHtml(property.district || "Dubai")}</p>
+      <h2 id="modalTitle">${escapeHtml(property.title)}</h2>
+      <p>${escapeHtml(property.description || "Объект доступен для персонального расчёта, просмотра и проверки условий покупки.")}</p>
+      <div class="modal-metrics">
+        <div><strong>${formatMoney(property.price)}</strong><span>стоимость</span></div>
+        <div><strong>${escapeHtml(property.area || 0)} м2</strong><span>площадь</span></div>
+        <div><strong>${property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`}</strong><span>планировка</span></div>
+        <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
+      </div>
+      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен 3D-тур" : "Просмотр по запросу"}</span></div>
+      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><button class="secondary" type="button" id="modalLeadButton">Сохранить заявку</button></div>
+    </div>
+  `;
+  content.querySelector("#modalLeadButton")?.addEventListener("click", () => {
+    saveLead({ source: "property_modal", property_id: property.id, property_title: property.title, message: `Интерес к объекту ${property.title}` });
+    window.open(whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`), "_blank", "noopener,noreferrer");
+  });
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closePropertyModal() {
+  document.querySelector("#propertyModal").hidden = true;
+  document.body.classList.remove("modal-open");
+}
+
+function fallbackLead(payload) {
+  const stored = JSON.parse(localStorage.getItem(LEADS_STORAGE_KEY) || "[]");
+  stored.unshift({ ...payload, created_at: new Date().toISOString() });
+  localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(stored.slice(0, 100)));
+}
+
+async function saveLead(payload) {
+  const lead = { ...payload, created_at: new Date().toISOString() };
+  if (!supabaseClient) {
+    fallbackLead(lead);
+    return { local: true };
+  }
+  const { error } = await supabaseClient.from("leads").insert(lead);
+  if (error) {
+    console.warn("Lead save failed, using local fallback", error);
+    fallbackLead(lead);
+    return { local: true, error };
+  }
+  return { remote: true };
 }
 
 function assistantPropertyLine(property) {
@@ -217,33 +311,51 @@ function getAssistantMatches(query) {
   return matches.slice(0, 3);
 }
 
+function updateAssistantProfile(query) {
+  const budget = parseBudget(query);
+  const lower = query.toLowerCase();
+  const district = [...new Set(properties.map((item) => item.district).filter(Boolean))]
+    .find((item) => lower.includes(item.toLowerCase()));
+  if (budget) activeAssistantProfile.budget = budget;
+  if (district) activeAssistantProfile.district = district;
+  if (/инвест|roi|доход|аренд/.test(lower)) activeAssistantProfile.goal = "инвестиции";
+  if (/жить|семь|для себя/.test(lower)) activeAssistantProfile.goal = "жить";
+  if (/перепрод/.test(lower)) activeAssistantProfile.goal = "перепродажа";
+}
+
+function assistantMissingQuestion() {
+  if (!activeAssistantProfile.budget) return "Сначала напишите комфортный бюджет: например, до $500k или до $1.2m.";
+  if (!activeAssistantProfile.goal) return "Какая цель покупки: жить, сдавать в аренду или перепродажа?";
+  if (!activeAssistantProfile.district) return "Есть район в приоритете: Dubai Marina, Downtown, Business Bay, Dubai Hills или Palm Jumeirah?";
+  return "";
+}
+
 function assistantReply(query) {
   const normalized = query.trim();
   if (!normalized) {
     return {
-      text: "Напишите бюджет, район или цель покупки. Я подберу 2-3 варианта из текущего каталога.",
+      text: "Давайте подберём спокойно в 3 шага: бюджет, цель покупки и район. Напишите бюджет, например: до $500k.",
       items: [],
     };
   }
-  const matches = getAssistantMatches(normalized);
+  updateAssistantProfile(normalized);
+  const missing = assistantMissingQuestion();
+  if (missing) {
+    return { text: missing, items: getAssistantMatches(normalized) };
+  }
+  const composedQuery = `${activeAssistantProfile.budget} ${activeAssistantProfile.goal} ${activeAssistantProfile.district}`;
+  const matches = getAssistantMatches(`${normalized} ${composedQuery}`);
   if (!matches.length) {
     return {
-      text: "По этому запросу в текущем каталоге нет точного совпадения. Лучше оставить заявку: менеджер проверит закрытые предложения и новые старты.",
+      text: "Точного совпадения нет. Я бы передал запрос менеджеру: он проверит закрытые предложения и новые старты под ваш профиль.",
       items: [],
     };
   }
-  const hasInvestmentIntent = /инвест|roi|доход/i.test(normalized);
-  const followUp = budgetIntent(normalized)
-    ? " Если хотите, уточните район или цель: жить, аренда или перепродажа."
-    : " Если есть бюджет, напишите его коротко: например, до $500k.";
   return {
-    text: `${hasInvestmentIntent
-      ? "Для инвестиционной цели я бы начал с этих объектов: у них сильнее выглядит связка цены, района и ROI."
-      : "Вот спокойная короткая подборка из текущего каталога. Можно открыть карточки или оставить заявку на точный расчёт."}${followUp}`,
+    text: `Подобрал короткий список под профиль: ${formatMoney(activeAssistantProfile.budget)}, ${activeAssistantProfile.goal}, ${activeAssistantProfile.district}. Можно запросить расчёт в WhatsApp.`,
     items: matches,
   };
 }
-
 function appendAssistantMessage(role, text, items = []) {
   const messages = document.querySelector("#assistantMessages");
   if (!messages) return;
@@ -254,10 +366,13 @@ function appendAssistantMessage(role, text, items = []) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-function askAssistant(query) {
+async function askAssistant(query) {
   appendAssistantMessage("user", query);
   const reply = assistantReply(query);
   appendAssistantMessage("assistant", reply.text, reply.items);
+  if (reply.items.length && activeAssistantProfile.budget && activeAssistantProfile.goal && activeAssistantProfile.district) {
+    await saveLead({ source: "assistant", budget: formatMoney(activeAssistantProfile.budget), goal: activeAssistantProfile.goal, message: `Помощник: ${query}`, property_title: reply.items.map((item) => item.title).join(", ") });
+  }
 }
 
 function initAssistant() {
@@ -298,21 +413,26 @@ function initAssistant() {
   });
 }
 
-function buildLeadMessage(form) {
-  const values = [...form.querySelectorAll("input, select, textarea")]
-    .map((field) => {
-      const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || "Поле";
-      return field.value.trim() ? `${label}: ${field.value.trim()}` : "";
-    })
-    .filter(Boolean);
-  return ["Здравствуйте! Хочу получить подборку недвижимости в Дубае.", ...values].join("\n");
+function collectLeadFields(form) {
+  return [...form.querySelectorAll("input, select, textarea")].reduce((acc, field) => {
+    const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || "Поле";
+    if (field.value.trim()) acc[label] = field.value.trim();
+    return acc;
+  }, {});
+}
+
+function buildLeadMessageFromFields(values) {
+  return ["Здравствуйте! Хочу получить подборку недвижимости в Дубае.", ...Object.entries(values).map(([key, value]) => `${key}: ${value}`)].join("\n");
 }
 
 function initLeadForms() {
   document.querySelectorAll("form:not(#assistantForm)").forEach((form) => {
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      window.open(whatsappLink(buildLeadMessage(form)), "_blank", "noopener,noreferrer");
+      const fields = collectLeadFields(form);
+      const message = buildLeadMessageFromFields(fields);
+      await saveLead({ source: form.closest("section")?.id || "form", name: fields["Имя"] || "", phone: fields["Телефон"] || fields["WhatsApp"] || "", budget: fields["Бюджет"] || "", goal: fields["Цель покупки"] || "", message, fields });
+      window.open(whatsappLink(message), "_blank", "noopener,noreferrer");
     });
   });
   document.querySelectorAll('a[href="https://wa.me/"], a[href="https://wa.me"]').forEach((link) => {
@@ -321,6 +441,9 @@ function initLeadForms() {
 }
 
 
+document.querySelector("#modalClose").addEventListener("click", closePropertyModal);
+document.querySelector("#modalBackdrop").addEventListener("click", closePropertyModal);
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePropertyModal(); });
 document.querySelector("#loadTour").addEventListener("click", loadTour);
 document.querySelector("#tourLoader").addEventListener("click", loadTour);
 

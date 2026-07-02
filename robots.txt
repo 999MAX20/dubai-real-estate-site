@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://999max20.github.io/dubai-real-estate-site/sitemap.xml

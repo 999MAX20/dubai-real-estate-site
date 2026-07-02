@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Премиальный сайт недвижимости в Дубае с каталогом, 3D-туром, районами и заявкой." />
+    <meta name="description" content="Подбор недвижимости в Дубае для жизни и инвестиций: каталог объектов, районы, 3D-туры, ROI, рассрочка и сопровождение сделки." />
+    <meta property="og:title" content="Dubai Estate | Недвижимость в Дубае" />
+    <meta property="og:description" content="Апартаменты, виллы и инвестиционные объекты в Dubai Marina, Downtown, Palm Jumeirah, Business Bay и Dubai Hills." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Dubai Estate | Недвижимость в Дубае</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -18,6 +23,7 @@
         <a href="#districts">Районы</a>
         <a href="#tour">3D-туры</a>
         <a href="#company">О компании</a>
+        <a href="#trust">Доверие</a>
         <a href="#lead">Контакты</a>
         <a href="./admin.html">Кабинет</a>
       </nav>
@@ -146,12 +152,12 @@
         <button class="filter-open" type="button">Фильтры</button>
         <div class="catalog-grid">
           <aside class="filters">
-            <label>Цена от / до <div class="range-row"><input value="$180 000" readonly /><input value="$2 000 000" readonly /></div></label>
+            <label>Цена от / до <div class="range-row"><input id="priceFrom" type="number" value="180000" min="0" step="10000" /><input id="priceTo" type="number" value="2000000" min="0" step="10000" /></div></label>
             <label>Район <select id="districtFilter"><option>Все районы</option><option>Dubai Marina</option><option>Palm Jumeirah</option><option>Downtown Dubai</option><option>Creek Harbour</option><option>Business Bay</option><option>Dubai Hills</option></select></label>
-            <label>Тип объекта <select><option>Любой</option><option>Апартаменты</option><option>Вилла</option><option>Пентхаус</option></select></label>
-            <label>Застройщик <select><option>Любой</option><option>Emaar</option><option>Damac</option><option>Ellington</option><option>Sobha</option></select></label>
+            <label>Тип объекта <select id="typeFilter"><option>Любой</option><option>Апартаменты</option><option>Вилла</option><option>Пентхаус</option></select></label>
+            <label>Застройщик <select id="developerFilter"><option>Любой</option><option>Emaar</option><option>Damac</option><option>Ellington</option><option>Sobha</option></select></label>
             <button class="toggle" id="tourOnly" type="button">✓ с 3D-туром</button>
-            <button class="toggle" type="button">✓ с рассрочкой</button>
+            <button class="toggle" id="installmentOnly" type="button">✓ с рассрочкой</button>
           </aside>
           <div class="cards-grid" id="catalogGrid"></div>
           <aside class="map" id="mapPins"><div class="map-grid"></div><div class="map-note">Карта: pin-карточки, фильтрация по району и цена на карте.</div></aside>
@@ -168,6 +174,25 @@
           <div><span>5</span><strong>Проверка документов</strong></div>
           <div><span>6</span><strong>Оплата</strong></div>
           <div><span>7</span><strong>Передача объекта</strong></div>
+        </div>
+      </section>
+
+
+      <section class="section trust" id="trust">
+        <div class="section-head">
+          <h2>Безопасная покупка без лишнего давления</h2>
+          <p>Мы фиксируем бюджет, цель и сроки, показываем документы объекта, объясняем платежный план и не подталкиваем к бронированию без расчётов.</p>
+        </div>
+        <div class="trust-grid">
+          <div><strong>Проверка объекта</strong><span>Документы, застройщик, статус сдачи и условия платежного плана.</span></div>
+          <div><strong>Прозрачный ROI</strong><span>Расчёт доходности, сценарии аренды и расходы на владение.</span></div>
+          <div><strong>Сопровождение сделки</strong><span>Бронирование, KYC, договор, платежи и передача объекта.</span></div>
+          <div><strong>Онлайн-подбор</strong><span>3D-туры, галереи, планировки и короткий список без поездки.</span></div>
+        </div>
+        <div class="faq-grid">
+          <details open><summary>Можно ли купить удалённо?</summary><p>Да. Подбор, просмотр, бронирование и часть документов можно пройти онлайн. Перед оплатой проверяются объект, застройщик и условия договора.</p></details>
+          <details><summary>Какие дополнительные расходы?</summary><p>Обычно учитываются регистрационные сборы, сервисные платежи, комиссия брокера при вторичном рынке и расходы на управление арендой.</p></details>
+          <details><summary>Как выбрать район под инвестиции?</summary><p>Смотрим бюджет входа, спрос на аренду, будущую инфраструктуру, ликвидность и конкуренцию в конкретном типе объекта.</p></details>
         </div>
       </section>
 
@@ -188,6 +213,15 @@
         </form>
       </section>
     </main>
+
+
+    <div class="property-modal" id="propertyModal" hidden>
+      <button class="modal-backdrop" id="modalBackdrop" type="button" aria-label="Закрыть карточку"></button>
+      <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" id="modalClose" type="button" aria-label="Закрыть">×</button>
+        <div id="modalContent"></div>
+      </article>
+    </div>
 
     <section class="assistant-widget" id="estateAssistant" aria-label="Помощник по подбору недвижимости">
       <button class="assistant-toggle" id="assistantToggle" type="button" aria-expanded="false" aria-controls="assistantPanel">
