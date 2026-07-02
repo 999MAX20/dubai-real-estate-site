@@ -12,6 +12,7 @@ const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KE
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
 const localAdminEmail = config.ADMIN_EMAIL || "admin@dubai-estate.local";
 const localAdminPassword = config.ADMIN_PASSWORD || "Dubai2026!";
+const adminEmailConfirmationMessage = "Admin user exists, but Supabase email confirmation is still required. Confirm it in Supabase Auth or rerun SUPABASE_SETUP.sql, then sign in again.";
 
 const form = document.querySelector("#propertyForm");
 const authPanel = document.querySelector("#authPanel");
@@ -75,7 +76,7 @@ function isRemoteWritable() {
 }
 
 function canUseAdmin() {
-  return isRemoteWritable() || (!supabaseClient && localAdminUnlocked);
+  return isRemoteWritable() || localAdminUnlocked;
 }
 
 function loadLocalProperties() {
@@ -106,8 +107,18 @@ async function loadProperties() {
     properties = loadLocalProperties();
     return;
   }
+  if (session?.user) {
+    properties = data?.length ? data.map(normalizeProperty) : defaults;
+    setMode(`Общая база Supabase: вход выполнен как ${session.user.email}`, "remote");
+    return;
+  }
+  if (localAdminUnlocked) {
+    properties = loadLocalProperties();
+    setMode("Открыт локальный черновик. Для общей базы подтвердите Supabase Auth и войдите ещё раз.", "error");
+    return;
+  }
   properties = data?.length ? data.map(normalizeProperty) : defaults;
-  setMode(session?.user ? `Общая база Supabase: вход выполнен как ${session.user.email}` : "Общая база Supabase подключена. Войдите, чтобы редактировать.", session?.user ? "remote" : "local");
+  setMode("Общая база Supabase подключена. Войдите, чтобы редактировать.", "local");
 }
 
 function formatMoney(value) {
@@ -131,17 +142,17 @@ function updateStats() {
 }
 
 function updateAuthUi() {
-  authPanel.hidden = supabaseClient ? Boolean(session?.user) : localAdminUnlocked;
-  document.querySelector("#logoutButton").hidden = supabaseClient ? !Boolean(session?.user) : !localAdminUnlocked;
+  authPanel.hidden = supabaseClient ? Boolean(session?.user || localAdminUnlocked) : localAdminUnlocked;
+  document.querySelector("#logoutButton").hidden = !Boolean(session?.user || localAdminUnlocked);
   document.querySelector("#seedRemote").hidden = !isRemoteWritable();
   document.querySelector("#authDescription").textContent = supabaseClient
-    ? "Войдите через Supabase Auth. После входа объекты и фото сохраняются в общей базе и видны всем посетителям."
+    ? "Войдите через Supabase Auth. Если admin-пользователь ещё не подтверждён, будет открыт локальный черновик и показана подсказка."
     : "Введите локальные admin-доступы. Данные сохраняются в браузере, пока Supabase не подключён.";
   document.querySelector("#objects").hidden = !canUseAdmin();
   document.querySelector("#editor").hidden = !canUseAdmin();
   document.querySelector("#data").hidden = !canUseAdmin();
   document.querySelector("#syncDescription").textContent = supabaseClient
-    ? "Список синхронизируется с общей Supabase базой. Без входа доступен просмотр."
+    ? (session?.user ? "Список синхронизируется с общей Supabase базой." : "Сейчас открыт локальный черновик. Общая база доступна после Supabase Auth.")
     : "Список синхронизируется с публичным каталогом на этом устройстве.";
 }
 
@@ -310,11 +321,6 @@ form.addEventListener("submit", async (event) => {
     authPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
-  if (supabaseClient && !session?.user) {
-    setMode("Войдите в кабинет, чтобы сохранять в общую базу. Сейчас доступен только просмотр.", "error");
-    authPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-    return;
-  }
   const id = fields.id.value || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
   const existing = properties.find((item) => String(item.id) === String(id));
   try {
@@ -360,8 +366,9 @@ authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const email = document.querySelector("#authEmail").value.trim();
   const password = document.querySelector("#authPassword").value;
+  const matchesConfiguredAdmin = email === localAdminEmail && password === localAdminPassword;
   if (!supabaseClient) {
-    if (email === localAdminEmail && password === localAdminPassword) {
+    if (matchesConfiguredAdmin) {
       localAdminUnlocked = true;
       sessionStorage.setItem("dubaiEstateAdminUnlocked", "true");
       await loadProperties();
@@ -374,7 +381,24 @@ authForm.addEventListener("submit", async (event) => {
   }
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
-    setMode(`Вход не прошёл: ${error.message}`, "error");
+    if (!matchesConfiguredAdmin) {
+      setMode(`Вход не прошёл: ${error.message}`, "error");
+      return;
+    }
+    const { data: signupData, error: signupError } = await supabaseClient.auth.signUp({ email, password });
+    if (signupData?.session) {
+      session = signupData.session;
+      await loadProperties();
+      renderRows();
+      resetForm();
+      return;
+    }
+    localAdminUnlocked = true;
+    sessionStorage.setItem("dubaiEstateAdminUnlocked", "true");
+    await loadProperties();
+    renderRows();
+    resetForm();
+    setMode(signupError ? `${adminEmailConfirmationMessage} ${signupError.message}` : adminEmailConfirmationMessage, "error");
     return;
   }
   session = data.session;

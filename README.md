@@ -12,14 +12,14 @@ Admin:
 https://999max20.github.io/dubai-real-estate-site/admin.html
 ```
 
-Default static-admin access:
+Admin access:
 
 ```text
 Email: admin@dubai-estate.local
 Password: Dubai2026!
 ```
 
-These credentials protect the static admin UI only. For real server-side access control, connect Supabase Auth using the steps below.
+The same credentials are bootstrapped into Supabase Auth by `SUPABASE_SETUP.sql`.
 
 ## Modes
 
@@ -32,8 +32,7 @@ The site works in two modes:
 
 1. Create a Supabase project.
 2. Open SQL Editor and run `SUPABASE_SETUP.sql`.
-3. In Supabase Auth, create the admin user with email/password.
-4. Edit `config.js`:
+3. Edit `config.js`:
 
 ```js
 window.DUBAI_ESTATE_CONFIG = {
@@ -43,7 +42,13 @@ window.DUBAI_ESTATE_CONFIG = {
 };
 ```
 
-5. Commit and push `config.js`.
-6. Open `/admin.html`, log in, then add objects and photos.
+4. Commit and push `config.js`.
+5. Open `/admin.html`, log in, then add objects and photos.
 
 The anon key is public by design in Supabase. Writes are protected by Auth and the RLS policies in `SUPABASE_SETUP.sql`.
+
+Current Supabase project:
+
+```text
+https://toksdstwfpegqbcgreuz.supabase.co
+```
