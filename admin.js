@@ -10,6 +10,8 @@ const defaults = [
 const config = window.DUBAI_ESTATE_CONFIG || {};
 const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KEY && window.supabase);
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
+const localAdminEmail = config.ADMIN_EMAIL || "admin@dubai-estate.local";
+const localAdminPassword = config.ADMIN_PASSWORD || "Dubai2026!";
 
 const form = document.querySelector("#propertyForm");
 const authPanel = document.querySelector("#authPanel");
@@ -35,6 +37,7 @@ const fields = {
 
 let properties = [];
 let session = null;
+let localAdminUnlocked = sessionStorage.getItem("dubaiEstateAdminUnlocked") === "true";
 let currentMainImage = "";
 let currentGallery = [];
 let currentMainFile = null;
@@ -71,6 +74,10 @@ function isRemoteWritable() {
   return Boolean(supabaseClient && session?.user);
 }
 
+function canUseAdmin() {
+  return isRemoteWritable() || (!supabaseClient && localAdminUnlocked);
+}
+
 function loadLocalProperties() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
@@ -86,7 +93,7 @@ function saveLocalProperties() {
 
 async function loadProperties() {
   if (!supabaseClient) {
-    setMode("Локальный режим: данные сохраняются только в этом браузере. Для общей базы заполните config.js.", "local");
+    setMode(localAdminUnlocked ? "Локальный кабинет открыт: данные сохраняются только в этом браузере." : "Кабинет закрыт. Войдите по admin-доступам из config.js.", localAdminUnlocked ? "local" : "error");
     properties = loadLocalProperties();
     return;
   }
@@ -124,9 +131,15 @@ function updateStats() {
 }
 
 function updateAuthUi() {
-  authPanel.hidden = !supabaseClient || Boolean(session?.user);
-  document.querySelector("#logoutButton").hidden = !Boolean(session?.user);
+  authPanel.hidden = supabaseClient ? Boolean(session?.user) : localAdminUnlocked;
+  document.querySelector("#logoutButton").hidden = supabaseClient ? !Boolean(session?.user) : !localAdminUnlocked;
   document.querySelector("#seedRemote").hidden = !isRemoteWritable();
+  document.querySelector("#authDescription").textContent = supabaseClient
+    ? "Войдите через Supabase Auth. После входа объекты и фото сохраняются в общей базе и видны всем посетителям."
+    : "Введите локальные admin-доступы. Данные сохраняются в браузере, пока Supabase не подключён.";
+  document.querySelector("#objects").hidden = !canUseAdmin();
+  document.querySelector("#editor").hidden = !canUseAdmin();
+  document.querySelector("#data").hidden = !canUseAdmin();
   document.querySelector("#syncDescription").textContent = supabaseClient
     ? "Список синхронизируется с общей Supabase базой. Без входа доступен просмотр."
     : "Список синхронизируется с публичным каталогом на этом устройстве.";
@@ -246,6 +259,10 @@ async function saveRemoteProperty(property) {
 }
 
 async function deleteProperty(id) {
+  if (!canUseAdmin()) {
+    setMode("Войдите в кабинет, чтобы редактировать объекты.", "error");
+    return;
+  }
   if (isRemoteWritable() && !String(id).startsWith("demo-")) {
     const { error } = await supabaseClient.from("properties").delete().eq("id", id);
     if (error) {
@@ -288,6 +305,11 @@ fields.gallery.addEventListener("change", async (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (!canUseAdmin()) {
+    setMode("Войдите в кабинет, чтобы сохранять объекты.", "error");
+    authPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   if (supabaseClient && !session?.user) {
     setMode("Войдите в кабинет, чтобы сохранять в общую базу. Сейчас доступен только просмотр.", "error");
     authPanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -336,9 +358,20 @@ form.addEventListener("submit", async (event) => {
 
 authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!supabaseClient) return;
   const email = document.querySelector("#authEmail").value.trim();
   const password = document.querySelector("#authPassword").value;
+  if (!supabaseClient) {
+    if (email === localAdminEmail && password === localAdminPassword) {
+      localAdminUnlocked = true;
+      sessionStorage.setItem("dubaiEstateAdminUnlocked", "true");
+      await loadProperties();
+      renderRows();
+      resetForm();
+      return;
+    }
+    setMode("Неверный email или пароль администратора.", "error");
+    return;
+  }
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
     setMode(`Вход не прошёл: ${error.message}`, "error");
@@ -353,6 +386,8 @@ authForm.addEventListener("submit", async (event) => {
 document.querySelector("#logoutButton").addEventListener("click", async () => {
   if (supabaseClient) await supabaseClient.auth.signOut();
   session = null;
+  localAdminUnlocked = false;
+  sessionStorage.removeItem("dubaiEstateAdminUnlocked");
   await loadProperties();
   renderRows();
 });
@@ -370,6 +405,7 @@ document.querySelector("#exportData").addEventListener("click", () => {
 });
 
 document.querySelector("#importData").addEventListener("change", async (event) => {
+  if (!canUseAdmin()) return;
   const [file] = Array.from(event.target.files || []);
   if (!file) return;
   const imported = JSON.parse(await file.text());
@@ -386,6 +422,7 @@ document.querySelector("#importData").addEventListener("change", async (event) =
 });
 
 document.querySelector("#resetData").addEventListener("click", async () => {
+  if (!canUseAdmin()) return;
   if (isRemoteWritable()) {
     const { error } = await supabaseClient.from("properties").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     if (error) {

@@ -12,6 +12,15 @@ Admin:
 https://999max20.github.io/dubai-real-estate-site/admin.html
 ```
 
+Default static-admin access:
+
+```text
+Email: admin@dubai-estate.local
+Password: Dubai2026!
+```
+
+These credentials protect the static admin UI only. For real server-side access control, connect Supabase Auth using the steps below.
+
 ## Modes
 
 The site works in two modes:
