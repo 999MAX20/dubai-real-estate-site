@@ -148,7 +148,6 @@ function updateStats() {
 function updateAuthUi() {
   authPanel.hidden = supabaseClient ? Boolean(session?.user) : localAdminUnlocked;
   document.querySelector("#logoutButton").hidden = !Boolean(session?.user || (!supabaseClient && localAdminUnlocked));
-  document.querySelector("#seedRemote").hidden = !isRemoteWritable();
   document.querySelector("#authDescription").textContent = supabaseClient
     ? "Войдите через Supabase Auth. Без входа админка показывает каталог только в режиме просмотра."
     : "Введите локальные admin-доступы. Данные сохраняются в браузере, пока Supabase не подключён.";
@@ -168,20 +167,20 @@ function renderRows() {
     <tr>
       <td>
         <div class="object-cell">
-          <div class="object-thumb"><img src="${property.image || ""}" alt="${property.title}"></div>
+          <div class="object-thumb">${property.image ? `<img src="${escapeHtml(property.image)}" alt="${escapeHtml(property.title)}" onerror="this.remove();">` : ""}</div>
           <div>
-            <div class="object-title">${property.title}</div>
-            <div class="object-meta">${property.type || "Объект"} · ${property.area || 0} м2 · ${property.bedrooms || 0} спальни</div>
+            <div class="object-title">${escapeHtml(property.title)}</div>
+            <div class="object-meta">${escapeHtml(property.type || "Объект")} · ${escapeHtml(property.area || 0)} м2 · ${escapeHtml(property.bedrooms || 0)} спальни</div>
           </div>
         </div>
       </td>
-      <td>${property.district || ""}</td>
+      <td>${escapeHtml(property.district || "")}</td>
       <td>${formatMoney(property.price)}</td>
       <td>${1 + (property.gallery?.length || 0)}</td>
       <td>
         <div class="row-actions">
-          <button class="icon-button" type="button" data-edit="${property.id}">Редактировать</button>
-          <button class="icon-button" type="button" data-delete="${property.id}">Удалить</button>
+          <button class="icon-button" type="button" data-edit="${escapeHtml(property.id)}">Редактировать</button>
+          <button class="icon-button" type="button" data-delete="${escapeHtml(property.id)}">Удалить</button>
         </div>
       </td>
     </tr>
@@ -458,17 +457,6 @@ document.querySelector("#resetData").addEventListener("click", async () => {
   }
   await refreshAdminData();
   resetForm();
-});
-
-document.querySelector("#seedRemote").addEventListener("click", async () => {
-  if (!isRemoteWritable()) return;
-  try {
-    for (const property of defaults) await saveRemoteProperty({ ...property, id: undefined });
-    await refreshAdminData();
-    resetForm();
-  } catch (error) {
-    setMode(`Демо-объекты не загружены: ${error.message}`, "error");
-  }
 });
 
 (async function initAdmin() {
