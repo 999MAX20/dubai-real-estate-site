@@ -118,9 +118,9 @@
           <div class="hero-copy">
             <p class="label">Dubai real estate advisory</p>
             <h1>Купить недвижимость в Дубае для жизни и инвестиций</h1>
-            <p>Персональная подборка объектов под бюджет, район и цель покупки: для жизни, аренды, перепродажи или долгосрочного инвестирования.</p>
+            <p>Персональная подборка объектов под бюджет, район и цель покупки. Отдельно проверяются позиции с гибкими условиями входа, если они доступны в выбранном сегменте.</p>
             <div class="actions">
-              <a class="primary" href="#matching">Получить подборку</a>
+              <a class="primary" href="#matching">Получить актуальные варианты</a>
               <a class="secondary" href="#budget">Оценить бюджет</a>
             </div>
           </div>
@@ -130,6 +130,20 @@
             <div><strong>до 8-12%</strong><span>ориентир доходности</span></div>
             <div><strong>WhatsApp</strong><span>быстрый старт</span></div>
           </div>
+        </div>
+      </section>
+
+      <section class="section opportunity" id="opportunity" data-opportunity-window>
+        <div class="opportunity-copy">
+          <p class="label">Короткое окно возможностей</p>
+          <h2>Гибкие условия по отдельным объектам</h2>
+          <p>В отдельных районах и проектах сейчас встречаются более сильные условия входа: торг, бонусы, рассрочка или улучшенный платежный план. Это не массовая распродажа, поэтому каждый вариант проверяется отдельно.</p>
+        </div>
+        <div class="opportunity-grid">
+          <div><strong>торг</strong><span>по отдельным объектам вторичного рынка</span></div>
+          <div><strong>рассрочка</strong><span>платежные планы от застройщика</span></div>
+          <div><strong>бонусы</strong><span>мебель, сборы или улучшенные условия</span></div>
+          <div><strong>точка входа</strong><span>позиции, где цена и ликвидность сходятся</span></div>
         </div>
       </section>
 
@@ -158,6 +172,7 @@
             <label>Телефон<input placeholder="+971" /></label>
             <label>Бюджет<input placeholder="от $180 000" /></label>
             <label>Район<select><option>не решил</option><option>Dubai Marina</option><option>Downtown Dubai</option><option>Business Bay</option><option>Dubai Hills</option><option>Palm Jumeirah</option><option>JVC</option></select></label>
+            <label data-opportunity-window>Гибкие условия<select><option>показать, если доступны</option><option>интересует торг</option><option>интересует рассрочка</option><option>лучший входной бюджет</option><option>не важно</option></select></label>
             <label>Спальни<select><option>не важно</option><option>студия</option><option>1 спальня</option><option>2 спальни</option><option>3+ спальни</option></select></label>
             <label>Срок<select><option>в ближайшие 1-3 месяца</option><option>3-6 месяцев</option><option>6-12 месяцев</option><option>смотрю рынок</option></select></label>
             <label>Цель покупки<select><option>инвестировать</option><option>жить</option><option>сдавать</option><option>перепродажа</option></select></label>
@@ -261,6 +276,7 @@
             <label>Застройщик <select id="developerFilter"><option>Любой</option><option>Emaar</option><option>Damac</option><option>Ellington</option><option>Sobha</option></select></label>
             <button class="toggle" id="tourOnly" type="button">✓ с онлайн-туром</button>
             <button class="toggle" id="installmentOnly" type="button">✓ с рассрочкой</button>
+            <button class="toggle" id="flexibleOnly" type="button" data-opportunity-window>✓ гибкие условия</button>
           </aside>
           <div class="cards-grid" id="catalogGrid"></div>
           <aside class="map" id="mapPins"><div class="map-grid"></div><div class="map-note">Карта помогает понять районы и бюджеты. Нажмите на район или точку.</div></aside>
@@ -290,7 +306,7 @@
           <div><strong>Проверка объекта</strong><span>Документы, застройщик, статус сдачи и условия платежного плана.</span></div>
           <div><strong>Прозрачная доходность</strong><span>Расчёт доходности, сценарии аренды и расходы на владение.</span></div>
           <div><strong>Сопровождение сделки</strong><span>Бронирование, KYC, договор, платежи и передача объекта.</span></div>
-          <div><strong>Онлайн-подбор</strong><span>Фото, планировки, карта, расчёты и короткий список без лишних встреч.</span></div>
+          <div><strong>Гибкие условия</strong><span>Скидка сама по себе не делает объект выгодным. Проверяются цена по рынку, ликвидность и причина уступки.</span></div>
         </div>
         <div class="faq-grid">
           <details open><summary>Можно ли купить удалённо?</summary><p>Да. Подбор, просмотр, бронирование и часть документов можно пройти онлайн. Перед оплатой проверяются объект, застройщик и условия договора.</p></details>
@@ -327,6 +343,7 @@
           <label>WhatsApp<input placeholder="+971" /></label>
           <label>Бюджет<input placeholder="от $180 000" /></label>
           <label>Район<select><option>не решил</option><option>Dubai Marina</option><option>Downtown Dubai</option><option>Business Bay</option><option>Dubai Hills</option><option>Palm Jumeirah</option><option>JVC</option></select></label>
+          <label data-opportunity-window>Гибкие условия<select><option>показать, если доступны</option><option>интересует торг</option><option>интересует рассрочка</option><option>лучший входной бюджет</option><option>не важно</option></select></label>
           <label>Срок покупки<select><option>в ближайшие 1-3 месяца</option><option>3-6 месяцев</option><option>6-12 месяцев</option><option>смотрю рынок</option></select></label>
           <label>Цель покупки<select><option>инвестировать</option><option>жить</option><option>сдавать</option><option>перепродажа</option></select></label>
           <label class="full">Комментарий<textarea placeholder="Район, сроки, тип объекта"></textarea></label>
@@ -360,6 +377,7 @@
         <div class="assistant-messages" id="assistantMessages"></div>
         <div class="assistant-chips" aria-label="Быстрые запросы">
           <button type="button" data-assistant-prompt="До $500k">До $500k</button>
+          <button type="button" data-assistant-prompt="Гибкие условия">Гибкие условия</button>
           <button type="button" data-assistant-prompt="Для инвестиций">Инвестиции</button>
           <button type="button" data-assistant-prompt="С онлайн-туром">Онлайн-тур</button>
           <button type="button" data-assistant-prompt="С рассрочкой">Рассрочка</button>

@@ -95,6 +95,7 @@ const districts = [
 const STORAGE_KEY = "dubaiEstateProperties";
 const WHATSAPP_NUMBER = "971502791555";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+const OPPORTUNITY_WINDOW_ENABLED = true;
 const config = window.DUBAI_ESTATE_CONFIG || {};
 const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KEY && window.supabase);
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
@@ -165,12 +166,14 @@ function propertyCard(property) {
   const bedrooms = property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`;
   const handover = escapeHtml(property.handover || "уточняется");
   const id = escapeHtml(property.id);
+  const opportunityBadge = OPPORTUNITY_WINDOW_ENABLED ? "<span>гибкие условия</span>" : "";
   return `
     <article class="property-card">
       <div class="card-media">
         <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
         <div class="badges">
           <span>ориентир</span>
+          ${opportunityBadge}
           ${property.image ? "" : "<span>фото-ориентир</span>"}
           ${property.tour ? "<span>онлайн-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
@@ -207,6 +210,7 @@ function getFilteredProperties() {
   const priceTo = Number(document.querySelector("#priceTo")?.value || Number.MAX_SAFE_INTEGER);
   const tourOnly = document.querySelector("#tourOnly")?.classList.contains("active") || false;
   const installmentOnly = document.querySelector("#installmentOnly")?.classList.contains("active") || false;
+  const flexibleOnly = document.querySelector("#flexibleOnly")?.classList.contains("active") || false;
   return properties.filter((property) => {
     const price = Number(property.price || 0);
     return (district === "Все районы" || property.district === district)
@@ -215,7 +219,8 @@ function getFilteredProperties() {
       && price >= priceFrom
       && price <= priceTo
       && (!tourOnly || property.tour)
-      && (!installmentOnly || property.installment);
+      && (!installmentOnly || property.installment)
+      && (!flexibleOnly || opportunityEligible(property));
   });
 }
 
@@ -251,6 +256,7 @@ function resetFilters() {
   document.querySelector("#developerFilter").value = "Любой";
   document.querySelector("#tourOnly").classList.remove("active");
   document.querySelector("#installmentOnly").classList.remove("active");
+  document.querySelector("#flexibleOnly")?.classList.remove("active");
   renderProperties();
 }
 document.querySelector("#districtGrid").innerHTML = districts.map((district) => `
@@ -270,10 +276,21 @@ document.querySelector("#districtGrid").innerHTML = districts.map((district) => 
 `).join("");
 
 document.querySelectorAll("#districtFilter, #typeFilter, #developerFilter, #priceFrom, #priceTo").forEach((control) => control.addEventListener("input", renderProperties));
-document.querySelectorAll("#tourOnly, #installmentOnly").forEach((button) => button.addEventListener("click", (event) => {
+document.querySelectorAll("#tourOnly, #installmentOnly, #flexibleOnly").forEach((button) => button.addEventListener("click", (event) => {
   event.currentTarget.classList.toggle("active");
   renderProperties();
 }));
+
+function opportunityEligible(property) {
+  if (!OPPORTUNITY_WINDOW_ENABLED) return false;
+  const price = Number(property.price || 0);
+  return property.installment || price <= 600000 || ["Business Bay", "JVC", "Dubai Marina", "Creek Harbour"].includes(property.district);
+}
+
+function initOpportunityWindow() {
+  if (OPPORTUNITY_WINDOW_ENABLED) return;
+  document.querySelectorAll("[data-opportunity-window]").forEach((item) => item.remove());
+}
 
 function districtNamesFromProperties(list = properties) {
   return [...new Set(list.map((property) => property.district).filter(Boolean))];
@@ -544,10 +561,11 @@ function modalGallery(property) {
 
 function propertyHighlights(property) {
   const highlights = [
+    opportunityEligible(property) ? "Есть смысл проверить гибкость условий по этой позиции" : "",
     property.installment ? "Есть платежный план от застройщика" : "Подходит для быстрой сделки без рассрочки",
     property.tour ? "Доступен формат онлайн-просмотра" : "Просмотр согласуется отдельно",
     property.roi ? `Ориентир доходности: ${property.roi}` : "Доходность рассчитывается после уточнения сценария аренды",
-  ];
+  ].filter(Boolean);
   return highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
 
@@ -576,7 +594,7 @@ function openPropertyModal(id) {
         <div><strong>${property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`}</strong><span>планировка</span></div>
         <div><strong>${escapeHtml(property.roi || "уточняется")}</strong><span>доходность</span></div>
       </div>
-      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Условия оплаты уточняются"}</span><span>${property.tour ? "Доступен онлайн-тур" : "Просмотр согласуется отдельно"}</span></div>
+      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Условия оплаты уточняются"}</span><span>${opportunityEligible(property) ? "Проверить гибкие условия" : "Условия проверяются индивидуально"}</span></div>
       <div class="modal-detail-grid">
         <section>
           <h3>На что обратить внимание</h3>
@@ -671,6 +689,7 @@ function getAssistantMatches(query) {
   if (budget) matches = matches.filter((item) => item.price <= budget);
   if (knownDistrict) matches = matches.filter((item) => item.district === knownDistrict);
   if (lower.includes("3d") || lower.includes("онлайн") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
+  if (lower.includes("гибк") || lower.includes("торг") || lower.includes("скид") || lower.includes("услов")) matches = matches.filter(opportunityEligible);
   if (lower.includes("расср")) matches = matches.filter((item) => item.installment);
   if (lower.includes("готов")) matches = matches.filter((item) => String(item.handover).toLowerCase().includes("готов"));
   if (lower.includes("вилл")) matches = matches.filter((item) => String(item.type).toLowerCase().includes("вилл"));
@@ -720,7 +739,7 @@ function assistantReply(query) {
   const matches = getAssistantMatches(`${normalized} ${composedQuery}`);
   if (!matches.length) {
     return {
-      text: "Точного совпадения нет. Запрос лучше уточнить вручную: могут подойти новые проекты или объекты вне открытого списка.",
+      text: "Точного совпадения нет. Запрос лучше уточнить вручную: могут подойти новые проекты, объекты вне открытого списка или позиции с индивидуальными условиями.",
       items: [],
     };
   }
@@ -767,7 +786,9 @@ function initAssistant() {
     panel.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
     if (!document.querySelector("#assistantMessages")?.children.length) {
-      appendAssistantMessage("assistant", "Помощник фильтрует варианты по бюджету, району, онлайн-туру и рассрочке. Открывается только по нажатию.");
+      appendAssistantMessage("assistant", OPPORTUNITY_WINDOW_ENABLED
+        ? "Помощник фильтрует варианты по бюджету, району, онлайн-туру, рассрочке и гибким условиям."
+        : "Помощник фильтрует варианты по бюджету, району, онлайн-туру и рассрочке.");
     }
   };
   const closeAssistant = () => {
@@ -809,6 +830,9 @@ function buildWhatsappMessage(values) {
     "Параметры: бюджет, район и цель покупки.",
   ];
   Object.entries(values).forEach(([key, value]) => lines.push(`${key}: ${value}`));
+  if (OPPORTUNITY_WINDOW_ENABLED) {
+    lines.push("Гибкие условия: интересны варианты с торгом, рассрочкой или улучшенным платежным планом, если они подходят по бюджету и району.");
+  }
   if (!values["Комментарий"]) lines.push("Комментарий: прошу прислать 3-5 вариантов и отметить риски по району/проекту.");
   return lines.join("\n");
 }
@@ -860,6 +884,7 @@ document.querySelector("#loadTour").addEventListener("click", loadTour);
 document.querySelector("#tourLoader").addEventListener("click", loadTour);
 
 (async function initPublicSite() {
+  initOpportunityWindow();
   properties = await loadProperties();
   renderProperties();
   openHashProperty();
