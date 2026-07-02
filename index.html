@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Премиальный сайт недвижимости в Дубае с каталогом, 3D-туром, районами и заявкой." />
+    <title>Dubai Estate | Недвижимость в Дубае</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <a class="logo" href="#top"><span>DE</span><strong>Dubai Estate</strong></a>
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="#catalog">Купить</a>
+        <a href="#invest">Инвестиции</a>
+        <a href="#districts">Районы</a>
+        <a href="#tour">3D-туры</a>
+        <a href="#company">О компании</a>
+        <a href="#lead">Контакты</a>
+      </nav>
+      <a class="header-cta" href="#matching">Подобрать объект</a>
+      <button class="menu" type="button" aria-label="Открыть меню">☰</button>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-shade"></div>
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <p class="label">Dubai Marina / Downtown / Palm Jumeirah</p>
+            <h1>Недвижимость в Дубае для жизни и инвестиций</h1>
+            <p>Подберите апартаменты, виллу или инвестиционный объект с 3D-туром, аналитикой доходности и сопровождением сделки под ключ.</p>
+            <div class="actions">
+              <a class="primary" href="#catalog">Смотреть объекты</a>
+              <a class="secondary" href="#matching">Получить подборку</a>
+            </div>
+          </div>
+          <div class="stats">
+            <div><strong>250+ объектов</strong><span>в премиальных районах</span></div>
+            <div><strong>от $180 000</strong><span>минимальный бюджет</span></div>
+            <div><strong>ROI до 8-12%</strong><span>арендная доходность</span></div>
+            <div><strong>3D-туры</strong><span>доступны онлайн</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Лучшие предложения</h2>
+          <p>Карточки показывают район, цену, площадь, спальни, доходность и доступность 3D-тура.</p>
+        </div>
+        <div class="best-grid" id="bestGrid"></div>
+      </section>
+
+      <section class="section matching" id="matching">
+        <div>
+          <h2>Интерактивный подбор</h2>
+          <p>Выберите бюджет, цель покупки, район, тип объекта, срок сдачи и рассрочку.</p>
+        </div>
+        <div class="matching-panel">
+          <div class="choice-grid">
+            <button type="button">жить</button>
+            <button type="button">инвестировать</button>
+            <button type="button">сдавать</button>
+            <button type="button">перепродажа</button>
+          </div>
+          <form class="lead-form compact">
+            <label>Имя<input placeholder="Ваше имя" /></label>
+            <label>Телефон<input placeholder="+971" /></label>
+            <label>Бюджет<input placeholder="от $180 000" /></label>
+            <label>Цель покупки<select><option>инвестировать</option><option>жить</option><option>сдавать</option><option>перепродажа</option></select></label>
+            <button type="submit">Получить подборку в WhatsApp</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="section" id="districts">
+        <div class="section-head">
+          <h2>Районы Дубая</h2>
+          <p>Downtown Dubai, Dubai Marina, Palm Jumeirah, Business Bay, JVC, Dubai Hills и Creek Harbour.</p>
+        </div>
+        <div class="district-grid" id="districtGrid"></div>
+      </section>
+
+      <section class="section invest" id="invest">
+        <div class="panel">
+          <h2>Почему Дубай</h2>
+          <div class="benefit-grid">
+            <div>✓ отсутствие налога на доход от аренды</div>
+            <div>✓ высокий спрос на аренду</div>
+            <div>✓ рассрочки от застройщиков</div>
+            <div>✓ статус международного рынка</div>
+            <div>✓ рост стоимости недвижимости</div>
+            <div>✓ безопасная сделка</div>
+          </div>
+        </div>
+        <div class="panel dark">
+          <h2>Инвестиционный блок</h2>
+          <div class="metric-grid">
+            <div><strong>8.4%</strong><span>ожидаемая доходность</span></div>
+            <div><strong>$3 200</strong><span>средняя аренда</span></div>
+            <div><strong>9 лет</strong><span>срок окупаемости</span></div>
+            <div><strong>Q4 2026</strong><span>платежный план</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section tour" id="tour">
+        <div>
+          <h2>Смотрите объект до покупки — как будто вы уже внутри.</h2>
+          <p>360° просмотр, переход между комнатами, точки интереса, планировка, вид из окна и переключение день/ночь.</p>
+          <div class="actions">
+            <button class="primary" id="loadTour" type="button">Открыть 3D-тур</button>
+            <a class="secondary" href="#lead">Оставить заявку</a>
+          </div>
+        </div>
+        <div class="tour-view" id="tourView">
+          <button class="tour-loader" id="tourLoader" type="button">Загрузить 3D-тур</button>
+          <div class="floorplan"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </section>
+
+      <section class="section project" id="company">
+        <div class="project-media"></div>
+        <div class="panel project-copy">
+          <p class="label">Dubai Marina</p>
+          <h2>Marina Sky Residences</h2>
+          <p>Галерея: экстерьер, интерьер, вид из окна, инфраструктура, планировки, карта и видео.</p>
+          <div class="layouts">
+            <div><strong>1 спальня</strong><span>82 м2</span><span>$420 000</span><em>доступно</em></div>
+            <div><strong>2 спальни</strong><span>118 м2</span><span>$610 000</span><em>забронировано</em></div>
+            <div><strong>3 спальни</strong><span>164 м2</span><span>$890 000</span><em>продано</em></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section catalog" id="catalog">
+        <div class="section-head">
+          <h2>Каталог объектов</h2>
+          <p>Фильтры, карточки и карта работают как главный раздел подбора.</p>
+        </div>
+        <button class="filter-open" type="button">Фильтры</button>
+        <div class="catalog-grid">
+          <aside class="filters">
+            <label>Цена от / до <div class="range-row"><input value="$180 000" readonly /><input value="$2 000 000" readonly /></div></label>
+            <label>Район <select id="districtFilter"><option>Все районы</option><option>Dubai Marina</option><option>Palm Jumeirah</option><option>Downtown Dubai</option><option>Creek Harbour</option><option>Business Bay</option><option>Dubai Hills</option></select></label>
+            <label>Тип объекта <select><option>Любой</option><option>Апартаменты</option><option>Вилла</option><option>Пентхаус</option></select></label>
+            <label>Застройщик <select><option>Любой</option><option>Emaar</option><option>Damac</option><option>Ellington</option><option>Sobha</option></select></label>
+            <button class="toggle" id="tourOnly" type="button">✓ с 3D-туром</button>
+            <button class="toggle" type="button">✓ с рассрочкой</button>
+          </aside>
+          <div class="cards-grid" id="catalogGrid"></div>
+          <aside class="map" id="mapPins"><div class="map-grid"></div><div class="map-note">Карта: pin-карточки, фильтрация по району и цена на карте.</div></aside>
+        </div>
+      </section>
+
+      <section class="section steps">
+        <h2>Как проходит сделка</h2>
+        <div class="steps-line">
+          <div><span>1</span><strong>Консультация</strong></div>
+          <div><span>2</span><strong>Подбор объектов</strong></div>
+          <div><span>3</span><strong>Онлайн-просмотр / 3D-тур</strong></div>
+          <div><span>4</span><strong>Бронирование</strong></div>
+          <div><span>5</span><strong>Проверка документов</strong></div>
+          <div><span>6</span><strong>Оплата</strong></div>
+          <div><span>7</span><strong>Передача объекта</strong></div>
+        </div>
+      </section>
+
+      <section class="section lead" id="lead">
+        <div>
+          <h2>Личный подбор объекта</h2>
+          <p>Оставьте заявку: имя, телефон, WhatsApp, бюджет, цель покупки и комментарий.</p>
+          <div class="contact-strip"><span>WhatsApp</span><span>Telegram</span><span>CRM</span><span>PDF-презентация</span></div>
+        </div>
+        <form class="lead-form">
+          <label>Имя<input placeholder="Ваше имя" /></label>
+          <label>Телефон<input placeholder="+971" /></label>
+          <label>WhatsApp<input placeholder="+971" /></label>
+          <label>Бюджет<input placeholder="от $180 000" /></label>
+          <label>Цель покупки<select><option>инвестировать</option><option>жить</option><option>сдавать</option><option>перепродажа</option></select></label>
+          <label class="full">Комментарий<textarea placeholder="Район, сроки, тип объекта"></textarea></label>
+          <button type="submit">Получить подборку объектов</button>
+        </form>
+      </section>
+    </main>
+
+    <a class="sticky-cta" href="https://wa.me/" target="_blank" rel="noreferrer">WhatsApp</a>
+    <script src="./script.js"></script>
+  </body>
+</html>
