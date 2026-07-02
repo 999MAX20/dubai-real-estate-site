@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Кабинет управления объектами Dubai Estate." />
+    <title>Dubai Estate | Кабинет</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body class="admin-body">
+    <header class="admin-topbar">
+      <a class="logo" href="./"><span>DE</span><strong>Dubai Estate</strong></a>
+      <nav class="admin-nav">
+        <a href="./">Сайт</a>
+        <a href="#objects">Объекты</a>
+        <a href="#editor">Добавить объект</a>
+        <a href="#data">Данные</a>
+      </nav>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-hero">
+        <div>
+          <p class="label">Личный кабинет</p>
+          <h1>Управление объектами и фотографиями</h1>
+          <p>Добавляйте объекты, загружайте главное фото и галерею, меняйте цену, район, ROI, статус 3D-тура и рассрочку.</p>
+        </div>
+        <div class="admin-stats">
+          <div><strong id="objectCount">0</strong><span>объектов</span></div>
+          <div><strong id="tourCount">0</strong><span>с 3D-туром</span></div>
+          <div><strong id="installmentCount">0</strong><span>с рассрочкой</span></div>
+        </div>
+      </section>
+
+      <section class="admin-grid" id="objects">
+        <div class="admin-panel list-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Объекты</h2>
+              <p>Список синхронизируется с публичным каталогом на этом устройстве.</p>
+            </div>
+            <button class="admin-primary" id="newObject" type="button">Новый объект</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Объект</th>
+                  <th>Район</th>
+                  <th>Цена</th>
+                  <th>Фото</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="objectRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="admin-panel" id="editor">
+          <div class="panel-head compact">
+            <div>
+              <h2 id="editorTitle">Новый объект</h2>
+              <p>Поля сразу готовы для каталога и карточек.</p>
+            </div>
+          </div>
+          <form class="admin-form" id="propertyForm">
+            <input type="hidden" id="propertyId" />
+            <label>Название проекта<input id="title" required placeholder="Marina Sky Residences" /></label>
+            <label>Район<input id="district" required placeholder="Dubai Marina" /></label>
+            <label>Тип объекта<input id="type" placeholder="Апартаменты" /></label>
+            <div class="form-row">
+              <label>Цена, USD<input id="price" required type="number" min="0" step="1000" /></label>
+              <label>Площадь, м2<input id="area" required type="number" min="0" /></label>
+            </div>
+            <div class="form-row">
+              <label>Спальни<input id="bedrooms" type="number" min="0" /></label>
+              <label>ROI<input id="roi" placeholder="8.4%" /></label>
+            </div>
+            <div class="form-row">
+              <label>Срок сдачи<input id="handover" placeholder="Q4 2026" /></label>
+              <label>Застройщик<input id="developer" placeholder="Emaar" /></label>
+            </div>
+            <label>Описание<textarea id="description" placeholder="Короткое описание объекта"></textarea></label>
+            <div class="check-row">
+              <label><input id="tour" type="checkbox" /> 3D-тур</label>
+              <label><input id="installment" type="checkbox" /> Рассрочка</label>
+            </div>
+            <label>Главное фото<input id="mainImage" type="file" accept="image/*" /></label>
+            <div class="image-preview" id="mainPreview"></div>
+            <label>Галерея<input id="gallery" type="file" accept="image/*" multiple /></label>
+            <div class="gallery-preview" id="galleryPreview"></div>
+            <div class="form-actions">
+              <button class="admin-primary" type="submit">Сохранить объект</button>
+              <button class="admin-secondary" id="resetForm" type="button">Очистить</button>
+            </div>
+          </form>
+        </aside>
+      </section>
+
+      <section class="admin-panel data-panel" id="data">
+        <div>
+          <h2>Импорт / экспорт</h2>
+          <p>GitHub Pages не имеет базы данных. Эти кнопки позволяют перенести каталог между браузерами или сохранить резервную копию.</p>
+        </div>
+        <div class="data-actions">
+          <button class="admin-primary" id="exportData" type="button">Скачать JSON</button>
+          <label class="admin-secondary import-label">Загрузить JSON<input id="importData" type="file" accept="application/json" /></label>
+          <button class="admin-danger" id="resetData" type="button">Сбросить каталог</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>

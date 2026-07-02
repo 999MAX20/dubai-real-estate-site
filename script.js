@@ -1,4 +1,4 @@
-const properties = [
+const DEFAULT_PROPERTIES = [
   { title: "Marina Sky Residences", district: "Dubai Marina", price: 420000, area: 82, bedrooms: 1, roi: "8.4%", handover: "Q4 2026", installment: true, tour: true, image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1400&q=85", x: 41, y: 59 },
   { title: "Palm Horizon Villas", district: "Palm Jumeirah", price: 1850000, area: 310, bedrooms: 4, roi: "6.9%", handover: "Готовый", installment: false, tour: true, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85", x: 28, y: 46 },
   { title: "Downtown Boulevard", district: "Downtown Dubai", price: 980000, area: 145, bedrooms: 2, roi: "7.6%", handover: "Q2 2027", installment: true, tour: true, image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85", x: 58, y: 42 },
@@ -15,6 +15,19 @@ const districts = [
 ];
 
 const formatMoney = (value) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+
+const STORAGE_KEY = "dubaiEstateProperties";
+
+function loadStoredProperties() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    return Array.isArray(stored) && stored.length ? stored : DEFAULT_PROPERTIES;
+  } catch {
+    return DEFAULT_PROPERTIES;
+  }
+}
+
+const properties = loadStoredProperties();
 
 function propertyCard(property) {
   return `
