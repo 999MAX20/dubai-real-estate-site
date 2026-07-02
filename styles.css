@@ -294,6 +294,14 @@ body.modal-open { overflow: hidden; }
 .modal-metrics strong { display: block; color: #fff; font-size: 20px; }
 .modal-metrics span, .modal-plan span { color: rgba(255,255,255,.64); font-size: 12px; font-weight: 850; }
 .modal-plan { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; }
+.modal-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.modal-detail-grid section {
+  border-radius: 18px;
+  background: rgba(255,255,255,.07);
+  padding: 16px;
+}
+.modal-detail-grid h3 { color: #fff; font-size: 17px; }
+.modal-detail-grid ul, .modal-detail-grid ol { display: grid; gap: 9px; margin: 12px 0 0; padding-left: 18px; color: rgba(255,255,255,.72); line-height: 1.5; }
 
 .matching, .invest, .tour, .project, .lead {
   display: grid;
@@ -426,6 +434,21 @@ select { color-scheme: dark; }
 textarea { min-height: 98px; padding: 12px; resize: vertical; }
 .range-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .cards-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.empty-state {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  min-height: 220px;
+  align-content: center;
+  justify-items: start;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background: rgba(255,255,255,.06);
+  padding: 24px;
+}
+.empty-state strong { color: #fff; font-size: 24px; }
+.empty-state span { max-width: 460px; color: rgba(255,255,255,.68); line-height: 1.55; }
+.empty-state button { min-height: 44px; padding: 0 16px; }
 .map {
   position: sticky;
   top: 102px;
@@ -616,7 +639,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .hero-inner { gap: 16px; padding: 104px 0 42px; }
   .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .best-grid, .cards-grid, .district-grid, .trust-grid, .faq-grid { grid-template-columns: 1fr; }
-  .modal-gallery, .modal-metrics, .modal-plan { grid-template-columns: 1fr; }
+  .modal-gallery, .modal-metrics, .modal-plan, .modal-detail-grid { grid-template-columns: 1fr; }
   .modal-gallery img, .modal-gallery img:first-child { height: 260px; grid-row: auto; }
   .district-card { grid-template-columns: 1fr; }
   .district-card img { aspect-ratio: 1.7; }
@@ -697,6 +720,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .modal-body h2 { font-size: 30px; line-height: 1.05; }
   .modal-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .modal-metrics div, .modal-plan span { border-radius: 14px; padding: 12px; }
+  .modal-detail-grid section { border-radius: 14px; padding: 14px; }
   .property-modal { padding: 10px; }
   .assistant-widget { left: auto; right: 18px; bottom: 82px; justify-items: end; }
   .assistant-widget:not(.assistant-ready) { display: none; }

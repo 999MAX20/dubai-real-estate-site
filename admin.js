@@ -163,9 +163,29 @@ function updateAuthUi() {
 
 function renderRows() {
   const rows = document.querySelector("#objectRows");
+  if (!properties.length) {
+    rows.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="5">
+          <div class="admin-empty">
+            <strong>Каталог пуст</strong>
+            <span>Добавьте первый объект, загрузите фото и сохраните. После сохранения он появится на лендинге.</span>
+            <button class="admin-primary" type="button" data-empty-new>Новый объект</button>
+          </div>
+        </td>
+      </tr>
+    `;
+    rows.querySelector("[data-empty-new]")?.addEventListener("click", () => {
+      resetForm();
+      document.querySelector("#editor").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    updateStats();
+    updateAuthUi();
+    return;
+  }
   rows.innerHTML = properties.map((property) => `
     <tr>
-      <td>
+      <td data-label="Объект">
         <div class="object-cell">
           <div class="object-thumb">${property.image ? `<img src="${escapeHtml(property.image)}" alt="${escapeHtml(property.title)}" onerror="this.remove();">` : ""}</div>
           <div>
@@ -174,10 +194,10 @@ function renderRows() {
           </div>
         </div>
       </td>
-      <td>${escapeHtml(property.district || "")}</td>
-      <td>${formatMoney(property.price)}</td>
-      <td>${1 + (property.gallery?.length || 0)}</td>
-      <td>
+      <td data-label="Район">${escapeHtml(property.district || "")}</td>
+      <td data-label="Цена">${formatMoney(property.price)}</td>
+      <td data-label="Статус"><div class="status-tags"><span>${1 + (property.gallery?.length || 0)} фото</span>${property.tour ? "<span>3D</span>" : ""}${property.installment ? "<span>Рассрочка</span>" : ""}</div></td>
+      <td data-label="Действия">
         <div class="row-actions">
           <button class="icon-button" type="button" data-edit="${escapeHtml(property.id)}">Редактировать</button>
           <button class="icon-button" type="button" data-delete="${escapeHtml(property.id)}">Удалить</button>
@@ -425,20 +445,30 @@ document.querySelector("#exportData").addEventListener("click", () => {
 });
 
 document.querySelector("#importData").addEventListener("change", async (event) => {
-  if (!canUseAdmin()) return;
-  const [file] = Array.from(event.target.files || []);
-  if (!file) return;
-  const imported = JSON.parse(await file.text());
-  if (!Array.isArray(imported)) return;
-  properties = imported.map(normalizeProperty);
-  if (isRemoteWritable()) {
-    for (const property of properties) await saveRemoteProperty(property);
-    await loadProperties();
-  } else {
-    saveLocalProperties();
+  try {
+    if (!canUseAdmin()) return;
+    const [file] = Array.from(event.target.files || []);
+    if (!file) return;
+    const imported = JSON.parse(await file.text());
+    if (!Array.isArray(imported)) {
+      setMode("Импорт не прошёл: JSON должен быть массивом объектов.", "error");
+      return;
+    }
+    properties = imported.map(normalizeProperty);
+    if (isRemoteWritable()) {
+      for (const property of properties) await saveRemoteProperty(property);
+      await loadProperties();
+    } else {
+      saveLocalProperties();
+    }
+    renderRows();
+    resetForm();
+    setMode(`Импортировано объектов: ${properties.length}`, isRemoteWritable() ? "remote" : "local");
+  } catch (error) {
+    setMode(`Импорт не прошёл: ${error.message}`, "error");
+  } finally {
+    event.target.value = "";
   }
-  renderRows();
-  resetForm();
 });
 
 document.querySelector("#resetData").addEventListener("click", async () => {

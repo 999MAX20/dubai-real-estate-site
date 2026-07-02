@@ -25,6 +25,12 @@ let activeAssistantProfile = { budget: null, goal: "", district: "" };
 
 const formatMoney = (value) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value || 0));
 
+function propertyShareUrl(id) {
+  const url = new URL(window.location.href);
+  url.hash = `property-${id}`;
+  return url.toString();
+}
+
 function normalizeProperty(property, index = 0) {
   return {
     id: property.id || `item-${index + 1}`,
@@ -97,6 +103,17 @@ function propertyCard(property) {
     </article>
   `;
 }
+
+function emptyState(title, text, action = "Сбросить фильтры") {
+  return `
+    <div class="empty-state">
+      <strong>${escapeHtml(title)}</strong>
+      <span>${escapeHtml(text)}</span>
+      <button class="secondary" type="button" data-reset-filters>${escapeHtml(action)}</button>
+    </div>
+  `;
+}
+
 function getFilteredProperties() {
   const district = document.querySelector("#districtFilter")?.value || "Все районы";
   const type = document.querySelector("#typeFilter")?.value || "Любой";
@@ -121,12 +138,21 @@ function bindPropertyActions(scope = document) {
   scope.querySelectorAll("[data-open-property]").forEach((button) => {
     button.addEventListener("click", () => openPropertyModal(button.dataset.openProperty));
   });
+  scope.querySelectorAll("[data-reset-filters]").forEach((button) => {
+    button.addEventListener("click", resetFilters);
+  });
 }
 
 function renderProperties() {
   const filtered = getFilteredProperties();
-  document.querySelector("#catalogGrid").innerHTML = filtered.map(propertyCard).join("");
-  document.querySelector("#bestGrid").innerHTML = properties.slice(0, 3).map(propertyCard).join("");
+  const catalogGrid = document.querySelector("#catalogGrid");
+  const bestGrid = document.querySelector("#bestGrid");
+  catalogGrid.innerHTML = filtered.length
+    ? filtered.map(propertyCard).join("")
+    : emptyState("Ничего не найдено", "Попробуйте расширить бюджет, снять 3D-тур или рассрочку.");
+  bestGrid.innerHTML = properties.length
+    ? properties.slice(0, 3).map(propertyCard).join("")
+    : emptyState("Каталог пока пуст", "Добавьте объекты в кабинете, и они появятся здесь.", "Открыть кабинет");
   bindPropertyActions(document.querySelector("#catalogGrid"));
   bindPropertyActions(document.querySelector("#bestGrid"));
   const map = document.querySelector("#mapPins");
@@ -141,6 +167,17 @@ function renderProperties() {
     pin.addEventListener("click", () => openPropertyModal(property.id));
     map.appendChild(pin);
   });
+}
+
+function resetFilters() {
+  document.querySelector("#priceFrom").value = 180000;
+  document.querySelector("#priceTo").value = 2000000;
+  document.querySelector("#districtFilter").value = "Все районы";
+  document.querySelector("#typeFilter").value = "Любой";
+  document.querySelector("#developerFilter").value = "Любой";
+  document.querySelector("#tourOnly").classList.remove("active");
+  document.querySelector("#installmentOnly").classList.remove("active");
+  renderProperties();
 }
 document.querySelector("#districtGrid").innerHTML = districts.map((district) => `
   <article class="district-card">
@@ -209,6 +246,22 @@ function modalGallery(property) {
   return images.length ? images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">`).join("") : `<img src="${fallbackImage}" alt="${escapeHtml(property.title)}" loading="lazy">`;
 }
 
+function propertyHighlights(property) {
+  const highlights = [
+    property.installment ? "Есть платежный план от застройщика" : "Подходит для быстрой сделки без рассрочки",
+    property.tour ? "Можно начать с онлайн-просмотра" : "Просмотр организуем по запросу",
+    property.roi ? `Ориентир доходности: ${property.roi}` : "Доходность считаем после уточнения сценария аренды",
+  ];
+  return highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
+function paymentPlan(property) {
+  const ready = String(property.handover || "").toLowerCase().includes("готов");
+  if (ready) return ["Бронирование", "Проверка объекта", "Сделка и передача"];
+  if (property.installment) return ["Первый взнос", "Платежи по этапам", property.handover || "Передача"];
+  return ["Проверка условий", "Резерв объекта", property.handover || "Передача"];
+}
+
 function openPropertyModal(id) {
   const property = propertyById(id);
   if (!property) return;
@@ -228,20 +281,63 @@ function openPropertyModal(id) {
         <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
       </div>
       <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен 3D-тур" : "Просмотр по запросу"}</span></div>
-      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><button class="secondary" type="button" id="modalCatalogButton">Вернуться в каталог</button></div>
+      <div class="modal-detail-grid">
+        <section>
+          <h3>Почему стоит смотреть</h3>
+          <ul>${propertyHighlights(property)}</ul>
+        </section>
+        <section>
+          <h3>Сценарий сделки</h3>
+          <ol>${paymentPlan(property).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+        </section>
+      </div>
+      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><button class="secondary" type="button" id="sharePropertyButton">Поделиться</button><button class="secondary" type="button" id="modalCatalogButton">Вернуться в каталог</button></div>
     </div>
   `;
   content.querySelector("#modalCatalogButton")?.addEventListener("click", () => {
     closePropertyModal();
     document.querySelector("#catalog")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+  content.querySelector("#sharePropertyButton")?.addEventListener("click", () => shareProperty(property));
   modal.hidden = false;
   document.body.classList.add("modal-open");
+  history.replaceState(null, "", propertyShareUrl(property.id));
 }
 
 function closePropertyModal() {
   document.querySelector("#propertyModal").hidden = true;
   document.body.classList.remove("modal-open");
+  if (window.location.hash.startsWith("#property-")) {
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
+}
+
+async function shareProperty(property) {
+  const url = propertyShareUrl(property.id);
+  const text = `${property.title}: ${formatMoney(property.price)}, ${property.district}`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: property.title, text, url });
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(url);
+      setTemporaryButtonText("#sharePropertyButton", "Ссылка скопирована");
+    }
+  } catch {
+    setTemporaryButtonText("#sharePropertyButton", "Не удалось");
+  }
+}
+
+function setTemporaryButtonText(selector, text) {
+  const button = document.querySelector(selector);
+  if (!button) return;
+  const original = button.textContent;
+  button.textContent = text;
+  setTimeout(() => { button.textContent = original; }, 1600);
+}
+
+function openHashProperty() {
+  const match = window.location.hash.match(/^#property-(.+)$/);
+  if (match) openPropertyModal(decodeURIComponent(match[1]));
 }
 
 
@@ -457,12 +553,14 @@ function initCatalogFilters() {
 document.querySelector("#modalClose").addEventListener("click", closePropertyModal);
 document.querySelector("#modalBackdrop").addEventListener("click", closePropertyModal);
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePropertyModal(); });
+window.addEventListener("hashchange", openHashProperty);
 document.querySelector("#loadTour").addEventListener("click", loadTour);
 document.querySelector("#tourLoader").addEventListener("click", loadTour);
 
 (async function initPublicSite() {
   properties = await loadProperties();
   renderProperties();
+  openHashProperty();
   initMatchingChoices();
   initCatalogFilters();
   initAssistant();
