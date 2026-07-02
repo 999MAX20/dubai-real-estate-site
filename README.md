@@ -21,6 +21,16 @@ Password: Dubai2026!
 
 The same credentials are bootstrapped into Supabase Auth by `SUPABASE_SETUP.sql`.
 
+## Scope
+
+This project is a landing site with a small object/photo admin panel. It is not a CRM. Lead handling stays WhatsApp-first here, and any CRM integration should be connected separately later.
+
+WhatsApp number:
+
+```text
++971 50 279 1555
+```
+
 ## Modes
 
 The site works in two modes:
@@ -52,3 +62,11 @@ Current Supabase project:
 ```text
 https://toksdstwfpegqbcgreuz.supabase.co
 ```
+
+## Current Features
+
+- Public Supabase-backed catalog with filters, map pins and object modal.
+- WhatsApp-only forms and CTAs.
+- Shareable object links through `#property-...` URL hashes.
+- Mobile-first public layout and mobile-friendly admin rows.
+- SEO basics: canonical URL, OpenGraph/Twitter meta, sitemap, FAQ schema and RealEstateAgent schema.
