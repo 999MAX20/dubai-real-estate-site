@@ -9,6 +9,39 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="%23071018"/><text x="32" y="39" font-family="Arial" font-size="20" font-weight="700" text-anchor="middle" fill="%23f3d99a">DE</text></svg>' />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Можно ли купить недвижимость в Дубае удалённо?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Да. Подбор, онлайн-просмотр, бронирование и часть документов можно пройти дистанционно. Перед оплатой проверяются объект, застройщик и условия договора."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Есть ли налог на доход от аренды в Дубае?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "В Дубае обычно нет налога на доход от аренды для частных инвесторов, но нужно учитывать сервисные платежи, сборы регистрации и расходы на управление объектом."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Можно ли купить объект в рассрочку от застройщика?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Да, многие застройщики предлагают платежные планы. Условия зависят от проекта, стадии строительства, первого взноса и срока передачи объекта."
+            }
+          }
+        ]
+      }
+    </script>
     <title>Dubai Estate | Недвижимость в Дубае</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -28,7 +61,7 @@
         <a href="./admin.html">Кабинет</a>
       </nav>
       <a class="header-cta" href="#matching">Подобрать объект</a>
-      <button class="menu" type="button" aria-label="Открыть меню">☰</button>
+      <a class="menu" href="#catalog">Каталог</a>
     </header>
 
     <main id="top">
@@ -191,7 +224,10 @@
         </div>
         <div class="faq-grid">
           <details open><summary>Можно ли купить удалённо?</summary><p>Да. Подбор, просмотр, бронирование и часть документов можно пройти онлайн. Перед оплатой проверяются объект, застройщик и условия договора.</p></details>
-          <details><summary>Какие дополнительные расходы?</summary><p>Обычно учитываются регистрационные сборы, сервисные платежи, комиссия брокера при вторичном рынке и расходы на управление арендой.</p></details>
+          <details><summary>Есть ли налог на аренду?</summary><p>Для частных инвесторов обычно нет налога на доход от аренды, но в расчёте нужно учитывать сервисные платежи, управление объектом и регистрационные сборы.</p></details>
+          <details><summary>Какие дополнительные расходы?</summary><p>Обычно учитываются регистрационные сборы, сервисные платежи, комиссия брокера на вторичном рынке и расходы на управление арендой.</p></details>
+          <details><summary>Как работает рассрочка?</summary><p>Платёжный план зависит от застройщика и стадии проекта: первый взнос, платежи во время строительства и финальный платёж при передаче.</p></details>
+          <details><summary>Можно ли получить Golden Visa?</summary><p>Возможность зависит от стоимости объекта и действующих правил. Перед покупкой проверяем порог, тип объекта и требования к оформлению.</p></details>
           <details><summary>Как выбрать район под инвестиции?</summary><p>Смотрим бюджет входа, спрос на аренду, будущую инфраструктуру, ликвидность и конкуренцию в конкретном типе объекта.</p></details>
         </div>
       </section>
@@ -200,7 +236,7 @@
         <div>
           <h2>Личный подбор объекта</h2>
           <p>Оставьте заявку: имя, телефон, WhatsApp, бюджет, цель покупки и комментарий.</p>
-          <div class="contact-strip"><span>WhatsApp</span><span>Telegram</span><span>CRM</span><span>PDF-презентация</span></div>
+          <div class="contact-strip"><span>WhatsApp</span><span>Подбор</span><span>3D-тур</span><span>Каталог</span></div>
         </div>
         <form class="lead-form">
           <label>Имя<input placeholder="Ваше имя" /></label>
