@@ -16,6 +16,7 @@
       <nav class="admin-nav">
         <a href="./">Сайт</a>
         <a href="#objects">Объекты</a>
+        <a href="#leads">Заявки</a>
         <a href="#editor">Добавить объект</a>
         <a href="#data">Данные</a>
       </nav>
@@ -33,6 +34,7 @@
           <div><strong id="objectCount">0</strong><span>объектов</span></div>
           <div><strong id="tourCount">0</strong><span>с 3D-туром</span></div>
           <div><strong id="installmentCount">0</strong><span>с рассрочкой</span></div>
+          <div><strong id="leadCount">0</strong><span>заявок</span></div>
         </div>
       </section>
 
@@ -112,6 +114,31 @@
             </div>
           </form>
         </aside>
+      </section>
+
+
+      <section class="admin-panel leads-panel" id="leads">
+        <div class="panel-head">
+          <div>
+            <h2>Заявки</h2>
+            <p>Заявки сохраняются из форм, модальных карточек и помощника. При недоступной базе используется локальный резерв в браузере.</p>
+          </div>
+          <button class="admin-secondary" id="refreshLeads" type="button">Обновить</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table leads-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Контакт</th>
+                <th>Бюджет / цель</th>
+                <th>Источник</th>
+                <th>Сообщение</th>
+              </tr>
+            </thead>
+            <tbody id="leadRows"></tbody>
+          </table>
+        </div>
       </section>
 
       <section class="admin-panel data-panel" id="data">

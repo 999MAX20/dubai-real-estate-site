@@ -118,6 +118,42 @@ to authenticated
 using (true)
 with check (true);
 
+
+create table if not exists public.leads (
+  id uuid primary key default gen_random_uuid(),
+  source text default 'site',
+  name text default '',
+  phone text default '',
+  budget text default '',
+  goal text default '',
+  property_id uuid null,
+  property_title text default '',
+  message text default '',
+  fields jsonb default '{}'::jsonb,
+  created_at timestamptz default now()
+);
+
+alter table public.leads enable row level security;
+
+drop policy if exists "Public can create leads" on public.leads;
+create policy "Public can create leads"
+on public.leads for insert
+to anon, authenticated
+with check (true);
+
+drop policy if exists "Authenticated users can read leads" on public.leads;
+create policy "Authenticated users can read leads"
+on public.leads for select
+to authenticated
+using (true);
+
+drop policy if exists "Authenticated users can manage leads" on public.leads;
+create policy "Authenticated users can manage leads"
+on public.leads for all
+to authenticated
+using (true)
+with check (true);
+
 insert into storage.buckets (id, name, public)
 values ('property-media', 'property-media', true)
 on conflict (id) do update set public = true;
