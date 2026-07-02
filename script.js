@@ -170,7 +170,7 @@ function propertyCard(property) {
   return `
     <article class="property-card">
       <div class="card-media">
-        <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
+        <img src="${image}" alt="${title}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='${fallbackImage}';">
         <div class="badges">
           <span>ориентир</span>
           ${opportunityBadge}
@@ -875,6 +875,23 @@ function initCatalogFilters() {
   });
 }
 
+function initFloatingControls() {
+  const mobile = window.matchMedia("(max-width: 640px)");
+  const sections = ["#opportunity", "#catalog"].map((selector) => document.querySelector(selector)).filter(Boolean);
+  if (!sections.length) return;
+  const update = () => {
+    const active = sections.some((section) => {
+      const rect = section.getBoundingClientRect();
+      return rect.bottom > window.innerHeight * 0.12 && rect.top < window.innerHeight * 0.82;
+    });
+    document.body.classList.toggle("floating-controls-muted", mobile.matches && active);
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  mobile.addEventListener?.("change", update);
+  update();
+}
+
 
 document.querySelector("#modalClose").addEventListener("click", closePropertyModal);
 document.querySelector("#modalBackdrop").addEventListener("click", closePropertyModal);
@@ -892,5 +909,6 @@ document.querySelector("#tourLoader").addEventListener("click", loadTour);
   initBudgetCalculator();
   initCatalogFilters();
   initAssistant();
+  initFloatingControls();
   initWhatsappForms();
 })();
