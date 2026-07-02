@@ -322,6 +322,44 @@ body.modal-open { overflow: hidden; }
   align-items: center;
   gap: 28px;
 }
+.opportunity {
+  display: grid;
+  grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.opportunity-copy {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.opportunity-grid div {
+  min-height: 150px;
+  border: 1px solid rgba(243,217,154,.22);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(243,217,154,.16), rgba(255,255,255,.055)),
+    rgba(255,255,255,.06);
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.2);
+}
+.opportunity-grid strong {
+  display: block;
+  color: var(--gold);
+  font-size: 28px;
+  line-height: 1.05;
+}
+.opportunity-grid span {
+  display: block;
+  margin-top: 12px;
+  color: rgba(255,255,255,.72);
+  line-height: 1.5;
+}
 .matching-panel, .panel { padding: 24px; }
 .choice-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 18px; }
 .choice-grid button, .toggle, .filter-open {
@@ -911,7 +949,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
 @media (max-width: 900px) {
   .header { width: calc(100% - 20px); }
   .header-cta { display: none; }
-  .hero-inner, .matching, .budget-lab, .invest, .tour, .project, .seo-panel, .lead { grid-template-columns: 1fr; }
+  .hero-inner, .matching, .budget-lab, .opportunity, .invest, .tour, .project, .seo-panel, .lead { grid-template-columns: 1fr; }
   .hero-inner { gap: 16px; padding: 104px 0 42px; }
   .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .best-grid, .cards-grid, .district-grid, .trust-grid, .faq-grid { grid-template-columns: 1fr; }
@@ -963,6 +1001,13 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .stats strong { font-size: 21px; line-height: 1.08; }
   .stats span { font-size: 11px; line-height: 1.35; }
   .choice-grid, .budget-form, .benefit-grid, .metric-grid, .lead-form, .lead-form.compact { grid-template-columns: 1fr; }
+  .opportunity-grid { grid-template-columns: 1fr; }
+  .opportunity-grid div {
+    min-height: 116px;
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .opportunity-grid strong { font-size: 24px; }
   .section { width: min(100% - 24px, 1180px); padding: 54px 0; }
   .section-head { gap: 10px; margin-bottom: 20px; }
   .section h2 { font-size: 32px; line-height: 1.04; }
