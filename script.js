@@ -361,6 +361,15 @@ function initAssistant() {
   const close = document.querySelector("#assistantClose");
   const form = document.querySelector("#assistantForm");
   const input = document.querySelector("#assistantInput");
+  const mobileAssistant = window.matchMedia("(max-width: 640px)");
+
+  function updateAssistantVisibility() {
+    if (!mobileAssistant.matches) {
+      widget.classList.add("assistant-ready");
+      return;
+    }
+    widget.classList.toggle("assistant-ready", window.scrollY > window.innerHeight * 0.45);
+  }
 
   const openAssistant = () => {
     panel.hidden = false;
@@ -374,6 +383,9 @@ function initAssistant() {
     toggle.setAttribute("aria-expanded", "false");
   };
 
+  updateAssistantVisibility();
+  window.addEventListener("scroll", updateAssistantVisibility, { passive: true });
+  mobileAssistant.addEventListener?.("change", updateAssistantVisibility);
   toggle.addEventListener("click", () => (panel.hidden ? openAssistant() : closeAssistant()));
   close.addEventListener("click", closeAssistant);
   document.querySelectorAll("[data-assistant-prompt]").forEach((button) => {
