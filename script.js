@@ -71,6 +71,7 @@ async function loadProperties() {
 
 function propertyCard(property) {
   const image = safeImageUrl(property.image || DEFAULT_PROPERTIES[0].image);
+  const fallbackImage = safeImageUrl(DEFAULT_PROPERTIES[0].image);
   const title = escapeHtml(property.title);
   const district = escapeHtml(property.district);
   const roi = escapeHtml(property.roi || "ROI");
@@ -81,7 +82,7 @@ function propertyCard(property) {
   return `
     <article class="property-card">
       <div class="card-media">
-        <img src="${image}" alt="${title}" loading="lazy">
+        <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
         <div class="badges">
           ${property.tour ? "<span>3D-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
@@ -204,7 +205,8 @@ function propertyById(id) {
 
 function modalGallery(property) {
   const images = [property.image, ...(property.gallery || [])].filter(Boolean);
-  return images.length ? images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy">`).join("") : `<img src="${safeImageUrl(DEFAULT_PROPERTIES[0].image)}" alt="${escapeHtml(property.title)}" loading="lazy">`;
+  const fallbackImage = safeImageUrl(DEFAULT_PROPERTIES[0].image);
+  return images.length ? images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">`).join("") : `<img src="${fallbackImage}" alt="${escapeHtml(property.title)}" loading="lazy">`;
 }
 
 function openPropertyModal(id) {
@@ -389,7 +391,7 @@ function initAssistant() {
   });
 }
 
-function collectLeadFields(form) {
+function collectFormFields(form) {
   return [...form.querySelectorAll("input, select, textarea")].reduce((acc, field) => {
     const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || "Поле";
     if (field.value.trim()) acc[label] = field.value.trim();
@@ -397,16 +399,16 @@ function collectLeadFields(form) {
   }, {});
 }
 
-function buildLeadMessageFromFields(values) {
+function buildWhatsappMessage(values) {
   return ["Здравствуйте! Хочу получить подборку недвижимости в Дубае.", ...Object.entries(values).map(([key, value]) => `${key}: ${value}`)].join("\n");
 }
 
-function initLeadForms() {
+function initWhatsappForms() {
   document.querySelectorAll("form:not(#assistantForm)").forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const fields = collectLeadFields(form);
-      const message = buildLeadMessageFromFields(fields);
+      const fields = collectFormFields(form);
+      const message = buildWhatsappMessage(fields);
       window.open(whatsappLink(message), "_blank", "noopener,noreferrer");
     });
   });
@@ -452,5 +454,5 @@ document.querySelector("#tourLoader").addEventListener("click", loadTour);
   initMatchingChoices();
   initCatalogFilters();
   initAssistant();
-  initLeadForms();
+  initWhatsappForms();
 })();
