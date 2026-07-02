@@ -12,7 +12,6 @@ const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KE
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
 const localAdminEmail = config.ADMIN_EMAIL || "admin2@dubai-estate.com";
 const localAdminPassword = config.ADMIN_PASSWORD || "Dubai2026!";
-const adminEmailConfirmationMessage = "Admin user exists, but Supabase email confirmation is still required. Confirm it in Supabase Auth or rerun SUPABASE_SETUP.sql, then sign in again.";
 
 const form = document.querySelector("#propertyForm");
 const authPanel = document.querySelector("#authPanel");
@@ -76,7 +75,7 @@ function isRemoteWritable() {
 }
 
 function canUseAdmin() {
-  return isRemoteWritable() || localAdminUnlocked;
+  return isRemoteWritable() || (!supabaseClient && localAdminUnlocked);
 }
 
 function loadLocalProperties() {
@@ -109,16 +108,11 @@ async function loadProperties() {
   }
   if (session?.user) {
     properties = data?.length ? data.map(normalizeProperty) : defaults;
-    setMode(`Общая база Supabase: вход выполнен как ${session.user.email}`, "remote");
-    return;
-  }
-  if (localAdminUnlocked) {
-    properties = loadLocalProperties();
-    setMode("Открыт локальный черновик. Для общей базы подтвердите Supabase Auth и войдите ещё раз.", "error");
+    setMode(`Режим Supabase: изменения сохраняются в общей базе. Вход: ${session.user.email}`, "remote");
     return;
   }
   properties = data?.length ? data.map(normalizeProperty) : defaults;
-  setMode("Общая база Supabase подключена. Войдите, чтобы редактировать.", "local");
+  setMode("Режим просмотра: Supabase подключён. Войдите, чтобы добавлять и редактировать объекты.", "local");
 }
 
 function formatMoney(value) {
@@ -152,17 +146,17 @@ function updateStats() {
 }
 
 function updateAuthUi() {
-  authPanel.hidden = supabaseClient ? Boolean(session?.user || localAdminUnlocked) : localAdminUnlocked;
-  document.querySelector("#logoutButton").hidden = !Boolean(session?.user || localAdminUnlocked);
+  authPanel.hidden = supabaseClient ? Boolean(session?.user) : localAdminUnlocked;
+  document.querySelector("#logoutButton").hidden = !Boolean(session?.user || (!supabaseClient && localAdminUnlocked));
   document.querySelector("#seedRemote").hidden = !isRemoteWritable();
   document.querySelector("#authDescription").textContent = supabaseClient
-    ? "Войдите через Supabase Auth. Если admin-пользователь ещё не подтверждён, будет открыт локальный черновик и показана подсказка."
+    ? "Войдите через Supabase Auth. Без входа админка показывает каталог только в режиме просмотра."
     : "Введите локальные admin-доступы. Данные сохраняются в браузере, пока Supabase не подключён.";
   document.querySelector("#objects").hidden = !canUseAdmin();
   document.querySelector("#editor").hidden = !canUseAdmin();
   document.querySelector("#data").hidden = !canUseAdmin();
   document.querySelector("#syncDescription").textContent = supabaseClient
-    ? (session?.user ? "Список синхронизируется с общей Supabase базой." : "Сейчас открыт локальный черновик. Общая база доступна после Supabase Auth.")
+    ? (session?.user ? "Режим Supabase: редактирование, добавление и удаление идут в общую базу." : "Режим просмотра. Для редактирования войдите через Supabase Auth.")
     : "Список синхронизируется с публичным каталогом на этом устройстве.";
 }
 
@@ -286,6 +280,8 @@ async function deleteProperty(id) {
     setMode("Войдите в кабинет, чтобы редактировать объекты.", "error");
     return;
   }
+  const property = properties.find((item) => String(item.id) === String(id));
+  if (!window.confirm(`Удалить объект "${property?.title || id}"?`)) return;
   if (isRemoteWritable() && !String(id).startsWith("demo-")) {
     const { error } = await supabaseClient.from("properties").delete().eq("id", id);
     if (error) {
@@ -398,22 +394,7 @@ authForm.addEventListener("submit", async (event) => {
   }
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
-    if (!matchesConfiguredAdmin) {
-      setMode(`Вход не прошёл: ${error.message}`, "error");
-      return;
-    }
-    const { data: signupData, error: signupError } = await supabaseClient.auth.signUp({ email, password });
-    if (signupData?.session) {
-      session = signupData.session;
-      await refreshAdminData();
-      resetForm();
-      return;
-    }
-    localAdminUnlocked = true;
-    sessionStorage.setItem("dubaiEstateAdminUnlocked", "true");
-    await refreshAdminData();
-    resetForm();
-    setMode(signupError ? `${adminEmailConfirmationMessage} ${signupError.message}` : adminEmailConfirmationMessage, "error");
+    setMode(`Вход не прошёл: ${error.message}. Редактирование доступно только после Supabase Auth.`, "error");
     return;
   }
   session = data.session;
@@ -429,7 +410,10 @@ document.querySelector("#logoutButton").addEventListener("click", async () => {
   await refreshAdminData();
 });
 
-document.querySelector("#newObject").addEventListener("click", resetForm);
+document.querySelector("#newObject").addEventListener("click", () => {
+  resetForm();
+  document.querySelector("#editor").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 document.querySelector("#resetForm").addEventListener("click", resetForm);
 
 document.querySelector("#exportData").addEventListener("click", () => {
@@ -460,6 +444,7 @@ document.querySelector("#importData").addEventListener("change", async (event) =
 
 document.querySelector("#resetData").addEventListener("click", async () => {
   if (!canUseAdmin()) return;
+  if (!window.confirm("Сбросить весь каталог? Это действие нельзя отменить.")) return;
   if (isRemoteWritable()) {
     const { error } = await supabaseClient.from("properties").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     if (error) {

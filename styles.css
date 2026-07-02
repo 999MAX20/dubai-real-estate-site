@@ -306,6 +306,11 @@ body.modal-open { overflow: hidden; }
   cursor: pointer;
   font-weight: 900;
 }
+.choice-grid button.active, .toggle.active, .filter-open[aria-expanded="true"] {
+  border-color: rgba(243,217,154,.44);
+  background: rgba(243,217,154,.15);
+  color: #fff;
+}
 
 .district-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 .district-card { display: grid; grid-template-columns: 180px minmax(0,1fr); overflow: hidden; }
@@ -610,6 +615,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .district-card { grid-template-columns: 1fr; }
   .district-card img { aspect-ratio: 1.7; }
   .catalog-grid { grid-template-columns: 1fr; }
+  .filter-open { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; width: 100%; }
   .filters { position: relative; top: auto; }
   .map { min-height: 320px; }
   .steps-line { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -634,6 +640,8 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .price-row, .card-actions { align-items: stretch; flex-direction: column; }
   .card-actions a, .card-actions button { width: 100%; justify-content: center; }
   .range-row { grid-template-columns: 1fr; }
+  .filters { display: none; }
+  .filters.open { display: grid; }
   .tour-view, .project-media { min-height: 360px; }
   .layouts div { grid-template-columns: 1fr; }
   .steps-line { grid-template-columns: 1fr; }
