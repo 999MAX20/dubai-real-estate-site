@@ -87,9 +87,9 @@ const districts = [
   { name: "Downtown Dubai", description: "Башни, Burj Khalifa, высокий спрос на short-term аренду.", price: "от $420 000", roi: "7-9%", lifestyle: "city luxury", fit: "ликвидность и престиж", risk: "высокий входной бюджет", image: "https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=900&q=85" },
   { name: "Dubai Marina", description: "Вид на воду, прогулочная набережная, стабильная ликвидность.", price: "от $300 000", roi: "8-10%", lifestyle: "waterfront", fit: "аренда и жизнь у воды", risk: "много конкурентов в аренде", image: "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=900&q=85" },
   { name: "Palm Jumeirah", description: "Виллы и резиденции у моря для жизни и премиальной аренды.", price: "от $850 000", roi: "5-7%", lifestyle: "beachfront", fit: "премиальная жизнь", risk: "дороже обслуживание", image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=900&q=85" },
-  { name: "JVC", description: "Рациональный входной бюджет и высокий спрос среди арендаторов.", price: "от $180 000", roi: "8-12%", lifestyle: "family", fit: "порог входа и ROI", risk: "качество зависит от проекта", image: "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=900&q=85" },
+  { name: "JVC", description: "Рациональный входной бюджет и высокий спрос среди арендаторов.", price: "от $180 000", roi: "8-12%", lifestyle: "family", fit: "порог входа и доходность", risk: "качество зависит от проекта", image: "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=900&q=85" },
   { name: "Business Bay", description: "Деловой район рядом с Downtown и каналом.", price: "от $220 000", roi: "7-10%", lifestyle: "business", fit: "аренда для специалистов", risk: "важны вид и шум", image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=85" },
-  { name: "Dubai Hills", description: "Зелёный семейный район с парками, школами и моллом.", price: "от $390 000", roi: "6-8%", lifestyle: "family premium", fit: "семья и долгий горизонт", risk: "не всегда максимум ROI", image: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dubai Hills", description: "Зелёный семейный район с парками, школами и моллом.", price: "от $390 000", roi: "6-8%", lifestyle: "family premium", fit: "семья и долгий горизонт", risk: "доходность обычно ниже, чем в более арендных районах", image: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=85" },
 ];
 
 const STORAGE_KEY = "dubaiEstateProperties";
@@ -160,27 +160,27 @@ function propertyCard(property) {
   const fallbackImage = fallbackImageForProperty(property);
   const title = escapeHtml(property.title);
   const district = escapeHtml(property.district);
-  const roi = escapeHtml(property.roi || "ROI");
+  const roi = escapeHtml(property.roi || "доходность");
   const area = escapeHtml(property.area);
   const bedrooms = property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`;
-  const handover = escapeHtml(property.handover || "по запросу");
+  const handover = escapeHtml(property.handover || "уточняется");
   const id = escapeHtml(property.id);
   return `
     <article class="property-card">
       <div class="card-media">
         <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
         <div class="badges">
-          <span>пример сценария</span>
-          ${property.image ? "" : "<span>референс-фото</span>"}
-          ${property.tour ? "<span>preview-тур</span>" : ""}
+          <span>ориентир</span>
+          ${property.image ? "" : "<span>фото-ориентир</span>"}
+          ${property.tour ? "<span>онлайн-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
         </div>
       </div>
       <div class="card-body">
         <div><p class="location">${district}</p><h3>${title}</h3></div>
-        <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${roi} ROI</span></div>
+        <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${roi} доходность</span></div>
         <div class="specs"><span>${area} м2</span><span>${bedrooms}</span><span>${handover}</span></div>
-        <div class="card-actions"><button class="primary" type="button" data-open-property="${id}">Подробнее</button><a class="secondary" href="${whatsappLink(`Здравствуйте! Хочу shortlist по сценарию: ${property.title}. Бюджет около ${formatMoney(property.price)}, район ${property.district}.`) }" target="_blank" rel="noreferrer">WhatsApp</a></div>
+        <div class="card-actions"><button class="primary" type="button" data-open-property="${id}">Подробнее</button><a class="secondary" href="${whatsappLink(`Здравствуйте! Интересует подбор недвижимости в Дубае. Ориентир: ${property.title}, бюджет около ${formatMoney(property.price)}, район ${property.district}.`) }" target="_blank" rel="noreferrer">WhatsApp</a></div>
       </div>
     </article>
   `;
@@ -234,10 +234,10 @@ function renderProperties() {
   const bestGrid = document.querySelector("#bestGrid");
   catalogGrid.innerHTML = filtered.length
     ? filtered.map(propertyCard).join("")
-    : emptyState("Ничего не найдено", "Попробуйте расширить бюджет, снять 3D-тур или рассрочку.");
+    : emptyState("Ничего не найдено", "Попробуйте расширить бюджет или снять часть фильтров.");
   bestGrid.innerHTML = properties.length
     ? properties.slice(0, 3).map(propertyCard).join("")
-    : emptyState("Каталог пока пуст", "Добавьте объекты в кабинете, и они появятся здесь.", "Открыть кабинет");
+    : emptyState("Каталог пока пуст", "Добавьте объекты в кабинете, и они появятся на сайте.", "Открыть кабинет");
   bindPropertyActions(document.querySelector("#catalogGrid"));
   bindPropertyActions(document.querySelector("#bestGrid"));
   renderMap(filtered);
@@ -305,7 +305,7 @@ function renderMap(filtered) {
   if (!filtered.length) {
     const empty = document.createElement("div");
     empty.className = "map-empty";
-    empty.innerHTML = "<strong>Нет точек на карте</strong><span>Расширьте бюджет или снимите фильтры, чтобы вернуть сценарии.</span>";
+    empty.innerHTML = "<strong>Нет точек на карте</strong><span>Расширьте бюджет или снимите часть фильтров.</span>";
     map.appendChild(empty);
   }
 
@@ -341,8 +341,8 @@ function updateMapNote(count) {
   const note = document.querySelector(".map-note");
   if (!note) return;
   note.textContent = count
-    ? `На карте ${count} сценариев. Нажмите на район или точку, чтобы увидеть объект и открыть карточку.`
-    : "Карта помогает понять районы и бюджеты. Расширьте фильтры, чтобы вернуть точки.";
+    ? `На карте ${count} вариантов. Нажмите на район или точку, чтобы открыть карточку.`
+    : "Карта помогает сравнить районы и бюджеты. Расширьте фильтры, чтобы вернуть точки.";
 }
 
 function selectMapProperty(property, focus = true) {
@@ -378,15 +378,15 @@ function renderTourScene() {
   const scene = TOUR_SCENES[activeTourScene];
   tourView.innerHTML = `
     <div class="tour-panorama" style="background-image: linear-gradient(110deg, rgba(7,16,24,.05), rgba(7,16,24,.48)), url('${scene.image}'); background-position: ${activeTourOffset}% center;"></div>
-    <div class="tour-topline"><strong>Interactive preview</strong><span>${escapeHtml(scene.note)}</span></div>
-    <div class="tour-scenes" role="tablist" aria-label="Сцены preview-тура">
+    <div class="tour-topline"><strong>Онлайн-тур</strong><span>${escapeHtml(scene.note)}</span></div>
+    <div class="tour-scenes" role="tablist" aria-label="Сцены онлайн-тура">
       ${TOUR_SCENES.map((item, index) => `<button type="button" class="${index === activeTourScene ? "active" : ""}" data-tour-scene="${index}">${escapeHtml(item.name)}</button>`).join("")}
     </div>
     <div class="tour-controls">
       <button type="button" data-tour-pan="-10" aria-label="Повернуть влево">‹</button>
       <button type="button" data-tour-pan="10" aria-label="Повернуть вправо">›</button>
     </div>
-    <div class="tour-caption">Preview показывает формат: сцены, точки интереса и план. Реальный 3D-тур добавляется после получения материалов объекта.</div>
+    <div class="tour-caption">Демонстрационный формат онлайн-просмотра: сцены, точки интереса и планировка. Полные материалы доступны для конкретного объекта.</div>
     <div class="floorplan"><span class="${activeTourScene === 0 ? "active" : ""}"></span><span class="${activeTourScene === 1 ? "active" : ""}"></span><span class="${activeTourScene === 2 ? "active" : ""}"></span><span></span></div>
   `;
   scene.hotspots.forEach((item) => {
@@ -437,31 +437,31 @@ function budgetProfile(budget, goal) {
     return {
       title: "Рациональный вход",
       areas: "JVC, Business Bay, отдельные студии в новых районах",
-      type: "студия или компактные 1 bedroom",
-      note: goal === "жить" ? "Для жизни лучше проверить транспорт и инфраструктуру вокруг дома." : "Для инвестиций важны service charges и реальная аренда в конкретной башне.",
+      type: "студия или компактные апартаменты с 1 спальней",
+      note: goal === "жить" ? "Для жизни важны транспорт, инфраструктура и окружение дома." : "Для инвестиций важны сервисные платежи и реальная арендная ставка в конкретной башне.",
     };
   }
   if (budget < 600000) {
     return {
-      title: "Сбалансированный shortlist",
+      title: "Сбалансированная подборка",
       areas: "Dubai Marina, Business Bay, Dubai Hills, Creek Harbour",
-      type: "1-2 bedroom или объект с рассрочкой",
-      note: goal === "перепродажа" ? "Смотреть проекты с сильным застройщиком и понятным графиком платежей." : "Можно сравнить готовые объекты и off-plan с платежным планом.",
+      type: "1-2 спальни или объект с рассрочкой",
+      note: goal === "перепродажа" ? "В приоритете проекты сильных застройщиков с понятным графиком платежей." : "Стоит сравнить готовые объекты и проекты на стадии строительства с платежным планом.",
     };
   }
   if (budget < 1200000) {
     return {
       title: "Премиальный выбор",
       areas: "Downtown Dubai, Dubai Marina, Dubai Hills, Palm Jumeirah",
-      type: "2-3 bedroom, видовые апартаменты или townhouse",
+      type: "2-3 спальни, видовые апартаменты или townhouse",
       note: "Ключевые параметры: вид, этаж, бренд здания, расходы владения и ликвидность выхода.",
     };
   }
   return {
-    title: "Prime-сценарий",
+    title: "Премиальный сегмент",
     areas: "Palm Jumeirah, Downtown Dubai, Dubai Hills, waterfront-проекты",
     type: "вилла, penthouse или крупная branded residence",
-    note: "Нужно отдельно проверять юридический статус, сервисные платежи и сравнительные сделки по району.",
+    note: "Отдельно проверяются юридический статус, сервисные платежи и сравнительные сделки по району.",
   };
 }
 
@@ -473,7 +473,7 @@ function updateBudgetCalculator() {
   const firstPayment = Math.round(budget * (downPayment / 100));
   const result = document.querySelector("#budgetResult");
   const message = [
-    "Здравствуйте! Хочу shortlist по бюджету.",
+    "Здравствуйте! Хочу получить подбор недвижимости в Дубае по бюджету.",
     `Бюджет: ${formatMoney(budget)}`,
     `Первый взнос: ${downPayment}% (${formatMoney(firstPayment)})`,
     `Цель: ${goal}`,
@@ -545,8 +545,8 @@ function modalGallery(property) {
 function propertyHighlights(property) {
   const highlights = [
     property.installment ? "Есть платежный план от застройщика" : "Подходит для быстрой сделки без рассрочки",
-    property.tour ? "Можно начать с онлайн-просмотра" : "Просмотр организуем по запросу",
-    property.roi ? `Ориентир доходности: ${property.roi}` : "Доходность считаем после уточнения сценария аренды",
+    property.tour ? "Доступен формат онлайн-просмотра" : "Просмотр согласуется отдельно",
+    property.roi ? `Ориентир доходности: ${property.roi}` : "Доходность рассчитывается после уточнения сценария аренды",
   ];
   return highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -569,21 +569,21 @@ function openPropertyModal(id) {
     <div class="modal-body">
       <p class="label">${escapeHtml(property.district || "Dubai")}</p>
       <h2 id="modalTitle">${escapeHtml(property.title)}</h2>
-      <p>${escapeHtml(property.description || "Объект доступен для персонального расчёта, просмотра и проверки условий покупки.")}</p>
+      <p>${escapeHtml(property.description || "Объект подходит для предварительного сравнения бюджета, района, планировки и условий покупки.")}</p>
       <div class="modal-metrics">
         <div><strong>${formatMoney(property.price)}</strong><span>стоимость</span></div>
         <div><strong>${escapeHtml(property.area || 0)} м2</strong><span>площадь</span></div>
         <div><strong>${property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`}</strong><span>планировка</span></div>
-        <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
+        <div><strong>${escapeHtml(property.roi || "уточняется")}</strong><span>доходность</span></div>
       </div>
-      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен preview-тур" : "Просмотр по запросу"}</span></div>
+      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Условия оплаты уточняются"}</span><span>${property.tour ? "Доступен онлайн-тур" : "Просмотр согласуется отдельно"}</span></div>
       <div class="modal-detail-grid">
         <section>
-          <h3>Почему стоит смотреть</h3>
+          <h3>На что обратить внимание</h3>
           <ul>${propertyHighlights(property)}</ul>
         </section>
         <section>
-          <h3>Сценарий сделки</h3>
+          <h3>Этапы покупки</h3>
           <ol>${paymentPlan(property).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
         </section>
       </div>
@@ -639,7 +639,7 @@ function openHashProperty() {
 
 function assistantPropertyLine(property) {
   const details = [property.district, property.bedrooms === 0 ? "студия" : `${property.bedrooms} спальни`, property.handover].filter(Boolean).join(" · ");
-  const roi = property.roi || "ROI по запросу";
+  const roi = property.roi || "доходность уточняется";
   return `<article class="assistant-card"><strong>${escapeHtml(property.title)}</strong><span>${escapeHtml(details)}</span><em>${escapeHtml(formatMoney(property.price))} · ${escapeHtml(roi)}</em></article>`;
 }
 
@@ -670,7 +670,7 @@ function getAssistantMatches(query) {
 
   if (budget) matches = matches.filter((item) => item.price <= budget);
   if (knownDistrict) matches = matches.filter((item) => item.district === knownDistrict);
-  if (lower.includes("3d") || lower.includes("preview") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
+  if (lower.includes("3d") || lower.includes("онлайн") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
   if (lower.includes("расср")) matches = matches.filter((item) => item.installment);
   if (lower.includes("готов")) matches = matches.filter((item) => String(item.handover).toLowerCase().includes("готов"));
   if (lower.includes("вилл")) matches = matches.filter((item) => String(item.type).toLowerCase().includes("вилл"));
@@ -697,7 +697,7 @@ function updateAssistantProfile(query) {
 }
 
 function assistantMissingQuestion() {
-  if (!activeAssistantProfile.budget) return "Сначала напишите комфортный бюджет: например, до $500k или до $1.2m.";
+  if (!activeAssistantProfile.budget) return "Напишите комфортный бюджет: например, до $500k или до $1.2m.";
   if (!activeAssistantProfile.goal) return "Какая цель покупки: жить, сдавать в аренду или перепродажа?";
   if (!activeAssistantProfile.district) return "Есть район в приоритете: Dubai Marina, Downtown, Business Bay, Dubai Hills или Palm Jumeirah?";
   return "";
@@ -707,7 +707,7 @@ function assistantReply(query) {
   const normalized = query.trim();
   if (!normalized) {
     return {
-      text: "Давайте подберём спокойно в 3 шага: бюджет, цель покупки и район. Напишите бюджет, например: до $500k.",
+      text: "Начните с бюджета, цели покупки и района. Например: до $500k, инвестиции, Dubai Marina.",
       items: [],
     };
   }
@@ -720,12 +720,12 @@ function assistantReply(query) {
   const matches = getAssistantMatches(`${normalized} ${composedQuery}`);
   if (!matches.length) {
     return {
-      text: "Точного совпадения нет. Я бы передал запрос менеджеру: он проверит закрытые предложения и новые старты под ваш профиль.",
+      text: "Точного совпадения нет. Запрос лучше уточнить вручную: могут подойти новые проекты или объекты вне открытого списка.",
       items: [],
     };
   }
   return {
-    text: `Подобрал короткий список под профиль: ${formatMoney(activeAssistantProfile.budget)}, ${activeAssistantProfile.goal}, ${activeAssistantProfile.district}. Можно запросить расчёт в WhatsApp.`,
+    text: `Подходящие ориентиры: ${formatMoney(activeAssistantProfile.budget)}, ${activeAssistantProfile.goal}, ${activeAssistantProfile.district}. Расчёт можно запросить в WhatsApp.`,
     items: matches,
   };
 }
@@ -767,7 +767,7 @@ function initAssistant() {
     panel.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
     if (!document.querySelector("#assistantMessages")?.children.length) {
-      appendAssistantMessage("assistant", "Я здесь, если нужен быстрый фильтр по бюджету, району, preview-турам или рассрочке. Сам не всплываю и не отвлекаю.");
+      appendAssistantMessage("assistant", "Помощник фильтрует варианты по бюджету, району, онлайн-туру и рассрочке. Открывается только по нажатию.");
     }
   };
   const closeAssistant = () => {
@@ -805,8 +805,8 @@ function collectFormFields(form) {
 
 function buildWhatsappMessage(values) {
   const lines = [
-    "Здравствуйте! Хочу получить актуальный shortlist недвижимости в Дубае.",
-    "Формат: короткая подборка под бюджет, район и цель покупки.",
+    "Здравствуйте! Хочу получить подбор недвижимости в Дубае.",
+    "Параметры: бюджет, район и цель покупки.",
   ];
   Object.entries(values).forEach(([key, value]) => lines.push(`${key}: ${value}`));
   if (!values["Комментарий"]) lines.push("Комментарий: прошу прислать 3-5 вариантов и отметить риски по району/проекту.");
