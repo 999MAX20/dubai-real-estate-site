@@ -15,6 +15,8 @@ const districts = [
 ];
 
 const STORAGE_KEY = "dubaiEstateProperties";
+const WHATSAPP_NUMBER = "971502791555";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 const config = window.DUBAI_ESTATE_CONFIG || {};
 const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KEY && window.supabase);
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
@@ -67,19 +69,26 @@ async function loadProperties() {
 }
 
 function propertyCard(property) {
+  const image = safeImageUrl(property.image || DEFAULT_PROPERTIES[0].image);
+  const title = escapeHtml(property.title);
+  const district = escapeHtml(property.district);
+  const roi = escapeHtml(property.roi || "ROI");
+  const area = escapeHtml(property.area);
+  const bedrooms = property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`;
+  const handover = escapeHtml(property.handover || "по запросу");
   return `
     <article class="property-card">
       <div class="card-media">
-        <img src="${property.image || DEFAULT_PROPERTIES[0].image}" alt="${property.title}" loading="lazy">
+        <img src="${image}" alt="${title}" loading="lazy">
         <div class="badges">
           ${property.tour ? "<span>3D-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
         </div>
       </div>
       <div class="card-body">
-        <div><p class="location">${property.district}</p><h3>${property.title}</h3></div>
-        <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${property.roi || "ROI"} ROI</span></div>
-        <div class="specs"><span>${property.area} м2</span><span>${property.bedrooms === 0 ? "студия" : `${property.bedrooms} спальни`}</span><span>${property.handover || "по запросу"}</span></div>
+        <div><p class="location">${district}</p><h3>${title}</h3></div>
+        <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${roi} ROI</span></div>
+        <div class="specs"><span>${area} м2</span><span>${bedrooms}</span><span>${handover}</span></div>
         <div class="card-actions"><a class="primary" href="#tour">Смотреть 3D-тур</a><a class="secondary" href="#company">Подробнее</a></div>
       </div>
     </article>
@@ -151,6 +160,16 @@ function escapeHtml(value) {
   }[char]));
 }
 
+function safeImageUrl(value) {
+  const url = String(value || "").trim();
+  return /^https?:\/\//i.test(url) ? escapeHtml(url) : DEFAULT_PROPERTIES[0].image;
+}
+
+function whatsappLink(message = "") {
+  const text = message ? `?text=${encodeURIComponent(message)}` : "";
+  return `${WHATSAPP_URL}${text}`;
+}
+
 function assistantPropertyLine(property) {
   const details = [property.district, property.bedrooms === 0 ? "студия" : `${property.bedrooms} спальни`, property.handover].filter(Boolean).join(" · ");
   const roi = property.roi || "ROI по запросу";
@@ -169,6 +188,10 @@ function parseBudget(query) {
   if (["m", "млн", "million"].includes(suffix)) value *= 1000000;
   if (!suffix && value < 10000) value *= 1000;
   return value;
+}
+
+function budgetIntent(query) {
+  return parseBudget(query) !== null;
 }
 
 function getAssistantMatches(query) {
@@ -210,10 +233,13 @@ function assistantReply(query) {
     };
   }
   const hasInvestmentIntent = /инвест|roi|доход/i.test(normalized);
+  const followUp = budgetIntent(normalized)
+    ? " Если хотите, уточните район или цель: жить, аренда или перепродажа."
+    : " Если есть бюджет, напишите его коротко: например, до $500k.";
   return {
-    text: hasInvestmentIntent
+    text: `${hasInvestmentIntent
       ? "Для инвестиционной цели я бы начал с этих объектов: у них сильнее выглядит связка цены, района и ROI."
-      : "Вот спокойная короткая подборка из текущего каталога. Можно открыть карточки или оставить заявку на точный расчёт.",
+      : "Вот спокойная короткая подборка из текущего каталога. Можно открыть карточки или оставить заявку на точный расчёт."}${followUp}`,
     items: matches,
   };
 }
@@ -223,7 +249,7 @@ function appendAssistantMessage(role, text, items = []) {
   if (!messages) return;
   const message = document.createElement("div");
   message.className = `assistant-message ${role}`;
-  message.innerHTML = `<p>${escapeHtml(text)}</p>${items.map(assistantPropertyLine).join("")}${role === "assistant" ? '<div class="assistant-links"><a href="#catalog">Открыть каталог</a><a href="https://wa.me/" target="_blank" rel="noreferrer">WhatsApp</a></div>' : ""}`;
+  message.innerHTML = `<p>${escapeHtml(text)}</p>${items.map(assistantPropertyLine).join("")}${role === "assistant" ? `<div class="assistant-links"><a href="#catalog">Открыть каталог</a><a href="${whatsappLink("Здравствуйте! Хочу получить подборку недвижимости в Дубае.")}" target="_blank" rel="noreferrer">WhatsApp</a></div>` : ""}`;
   messages.appendChild(message);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -272,13 +298,35 @@ function initAssistant() {
   });
 }
 
+function buildLeadMessage(form) {
+  const values = [...form.querySelectorAll("input, select, textarea")]
+    .map((field) => {
+      const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || "Поле";
+      return field.value.trim() ? `${label}: ${field.value.trim()}` : "";
+    })
+    .filter(Boolean);
+  return ["Здравствуйте! Хочу получить подборку недвижимости в Дубае.", ...values].join("\n");
+}
+
+function initLeadForms() {
+  document.querySelectorAll("form:not(#assistantForm)").forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      window.open(whatsappLink(buildLeadMessage(form)), "_blank", "noopener,noreferrer");
+    });
+  });
+  document.querySelectorAll('a[href="https://wa.me/"], a[href="https://wa.me"]').forEach((link) => {
+    link.href = whatsappLink("Здравствуйте! Хочу получить подборку недвижимости в Дубае.");
+  });
+}
+
 
 document.querySelector("#loadTour").addEventListener("click", loadTour);
 document.querySelector("#tourLoader").addEventListener("click", loadTour);
-document.querySelectorAll("form").forEach((form) => form.addEventListener("submit", (event) => event.preventDefault()));
 
 (async function initPublicSite() {
   properties = await loadProperties();
   renderProperties();
   initAssistant();
+  initLeadForms();
 })();
