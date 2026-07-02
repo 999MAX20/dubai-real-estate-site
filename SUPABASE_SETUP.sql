@@ -6,7 +6,7 @@ declare
 begin
   select id into admin_user_id
   from auth.users
-  where email = 'admin@dubai-estate.local'
+  where email = 'admin2@dubai-estate.com'
   limit 1;
 
   if admin_user_id is null then
@@ -34,7 +34,7 @@ begin
       '00000000-0000-0000-0000-000000000000',
       'authenticated',
       'authenticated',
-      'admin@dubai-estate.local',
+      'admin2@dubai-estate.com',
       crypt('Dubai2026!', gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}'::jsonb,
@@ -64,11 +64,11 @@ begin
     updated_at
   )
   values (
-    'admin@dubai-estate.local',
+    'admin2@dubai-estate.com',
     admin_user_id,
     jsonb_build_object(
       'sub', admin_user_id::text,
-      'email', 'admin@dubai-estate.local',
+      'email', 'admin2@dubai-estate.com',
       'email_verified', true
     ),
     'email',

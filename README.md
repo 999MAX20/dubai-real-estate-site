@@ -15,7 +15,7 @@ https://999max20.github.io/dubai-real-estate-site/admin.html
 Admin access:
 
 ```text
-Email: admin@dubai-estate.local
+Email: admin2@dubai-estate.com
 Password: Dubai2026!
 ```
 
