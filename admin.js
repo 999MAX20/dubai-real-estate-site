@@ -102,17 +102,17 @@ async function loadProperties() {
     .select("*")
     .order("created_at", { ascending: false });
   if (error) {
-    setMode(`Supabase подключён, но чтение не прошло: ${error.message}`, "error");
+    setMode(`Общая база подключена, но чтение не прошло: ${error.message}`, "error");
     properties = loadLocalProperties();
     return;
   }
   if (session?.user) {
     properties = data?.length ? data.map(normalizeProperty) : defaults;
-    setMode(`Режим Supabase: изменения сохраняются в общей базе. Вход: ${session.user.email}`, "remote");
+    setMode(`Режим редактирования: изменения сохраняются в общей базе. Вход: ${session.user.email}`, "remote");
     return;
   }
   properties = data?.length ? data.map(normalizeProperty) : defaults;
-  setMode("Режим просмотра: Supabase подключён. Войдите, чтобы добавлять и редактировать объекты.", "local");
+  setMode("Режим просмотра. Войдите, чтобы добавлять и редактировать объекты.", "local");
 }
 
 function formatMoney(value) {
@@ -149,13 +149,13 @@ function updateAuthUi() {
   authPanel.hidden = supabaseClient ? Boolean(session?.user) : localAdminUnlocked;
   document.querySelector("#logoutButton").hidden = !Boolean(session?.user || (!supabaseClient && localAdminUnlocked));
   document.querySelector("#authDescription").textContent = supabaseClient
-    ? "Войдите через Supabase Auth. Без входа админка показывает каталог только в режиме просмотра."
-    : "Введите локальные admin-доступы. Данные сохраняются в браузере, пока Supabase не подключён.";
+    ? "Войдите в кабинет. Без входа каталог доступен только в режиме просмотра."
+    : "Введите локальные admin-доступы. Данные сохраняются в этом браузере.";
   document.querySelector("#objects").hidden = !canUseAdmin();
   document.querySelector("#editor").hidden = !canUseAdmin();
   document.querySelector("#data").hidden = !canUseAdmin();
   document.querySelector("#syncDescription").textContent = supabaseClient
-    ? (session?.user ? "Режим Supabase: редактирование, добавление и удаление идут в общую базу." : "Режим просмотра. Для редактирования войдите через Supabase Auth.")
+    ? (session?.user ? "Режим редактирования: добавление, изменение и удаление идут в общую базу." : "Режим просмотра. Для редактирования войдите в кабинет.")
     : "Список синхронизируется с публичным каталогом на этом устройстве.";
 }
 
@@ -196,7 +196,7 @@ function renderRows() {
       </td>
       <td data-label="Район">${escapeHtml(property.district || "")}</td>
       <td data-label="Цена">${formatMoney(property.price)}</td>
-      <td data-label="Статус"><div class="status-tags"><span>${1 + (property.gallery?.length || 0)} фото</span>${property.tour ? "<span>3D</span>" : ""}${property.installment ? "<span>Рассрочка</span>" : ""}</div></td>
+      <td data-label="Статус"><div class="status-tags"><span>${1 + (property.gallery?.length || 0)} фото</span>${property.tour ? "<span>Онлайн-тур</span>" : ""}${property.installment ? "<span>Рассрочка</span>" : ""}</div></td>
       <td data-label="Действия">
         <div class="row-actions">
           <button class="icon-button" type="button" data-edit="${escapeHtml(property.id)}">Редактировать</button>
@@ -413,7 +413,7 @@ authForm.addEventListener("submit", async (event) => {
   }
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
-    setMode(`Вход не прошёл: ${error.message}. Редактирование доступно только после Supabase Auth.`, "error");
+    setMode(`Вход не прошёл: ${error.message}. Редактирование доступно только после авторизации.`, "error");
     return;
   }
   session = data.session;

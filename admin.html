@@ -28,12 +28,12 @@
         <div>
           <p class="label">Личный кабинет</p>
           <h1>Управление объектами и фотографиями</h1>
-          <p>Добавляйте объекты, загружайте главное фото и галерею, меняйте цену, район, ROI, статус 3D-тура и рассрочку.</p>
+          <p>Добавляйте объекты, загружайте главное фото и галерею, меняйте цену, район, доходность, статус онлайн-тура и рассрочку.</p>
           <div class="mode-line" id="modeLine">Проверка подключения...</div>
         </div>
         <div class="admin-stats">
           <div><strong id="objectCount">0</strong><span>объектов</span></div>
-          <div><strong id="tourCount">0</strong><span>с 3D-туром</span></div>
+          <div><strong id="tourCount">0</strong><span>с онлайн-туром</span></div>
           <div><strong id="installmentCount">0</strong><span>с рассрочкой</span></div>
         </div>
       </section>
@@ -41,7 +41,7 @@
       <section class="admin-panel auth-panel" id="authPanel" hidden>
         <div>
           <h2>Вход в кабинет</h2>
-          <p id="authDescription">Введите доступы администратора. После подключения Supabase этот же экран будет использовать серверный вход.</p>
+          <p id="authDescription">Введите доступы администратора. После подключения общей базы этот же экран использует серверный вход.</p>
         </div>
         <form class="auth-form" id="authForm">
           <label>Email<input id="authEmail" type="email" required placeholder="owner@example.com" /></label>
@@ -93,7 +93,7 @@
             </div>
             <div class="form-row">
               <label>Спальни<input id="bedrooms" type="number" min="0" /></label>
-              <label>ROI<input id="roi" placeholder="8.4%" /></label>
+              <label>Доходность<input id="roi" placeholder="8.4%" /></label>
             </div>
             <div class="form-row">
               <label>Срок сдачи<input id="handover" placeholder="Q4 2026" /></label>
@@ -101,7 +101,7 @@
             </div>
             <label>Описание<textarea id="description" placeholder="Короткое описание объекта"></textarea></label>
             <div class="check-row">
-              <label><input id="tour" type="checkbox" /> 3D-тур</label>
+              <label><input id="tour" type="checkbox" /> Онлайн-тур</label>
               <label><input id="installment" type="checkbox" /> Рассрочка</label>
             </div>
             <label>Главное фото<input id="mainImage" type="file" accept="image/*" /></label>
@@ -122,7 +122,7 @@
       <section class="admin-panel data-panel" id="data">
         <div>
           <h2>Импорт / экспорт</h2>
-          <p>GitHub Pages не имеет базы данных. Эти кнопки позволяют перенести каталог между браузерами или сохранить резервную копию.</p>
+          <p>Раздел нужен для резервной копии каталога и переноса данных между окружениями.</p>
         </div>
         <div class="data-actions">
           <button class="admin-primary" id="exportData" type="button">Скачать JSON</button>
