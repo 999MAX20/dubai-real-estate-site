@@ -220,6 +220,19 @@ h1, h2, h3 { margin: 0; letter-spacing: 0; }
 .property-card:hover { transform: translateY(-5px); border-color: rgba(229,192,123,.36); }
 .card-media { position: relative; aspect-ratio: 1.35; overflow: hidden; }
 .card-media img, .district-card img { width: 100%; height: 100%; object-fit: cover; }
+.media-placeholder {
+  display: grid;
+  height: 100%;
+  align-content: end;
+  gap: 6px;
+  background:
+    linear-gradient(135deg, rgba(243,217,154,.22), rgba(183,217,231,.16)),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 1px, transparent 1px 12px),
+    #0b1721;
+  padding: 18px;
+}
+.media-placeholder strong { color: #fff; font-size: 18px; }
+.media-placeholder span { color: rgba(255,255,255,.68); font-size: 12px; line-height: 1.45; }
 .badges { position: absolute; left: 14px; top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
 .badges span {
   border: 1px solid rgba(255,255,255,.26);
@@ -333,6 +346,25 @@ body.modal-open { overflow: hidden; }
 .district-card dl { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin: 0; }
 .district-card dt { color: rgba(255,255,255,.48); font-size: 11px; }
 .district-card dd { margin: 3px 0 0; font-size: 13px; font-weight: 900; }
+.district-risk {
+  border-radius: 14px;
+  background: rgba(243,217,154,.1);
+  padding: 10px 12px;
+  color: rgba(255,255,255,.76);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.district-risk strong { color: var(--gold); }
+
+.budget-lab { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); align-items: center; gap: 28px; }
+.budget-panel { display: grid; gap: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 26px; background: linear-gradient(145deg, rgba(255,255,255,.11), rgba(255,255,255,.045)); padding: 22px; box-shadow: 0 30px 90px rgba(0,0,0,.26); backdrop-filter: blur(24px); }
+.budget-form { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.budget-form label { display: grid; gap: 7px; color: rgba(255,255,255,.7); font-size: 12px; font-weight: 850; }
+.budget-result { display: grid; gap: 9px; border-radius: 18px; background: rgba(255,255,255,.07); padding: 16px; }
+.budget-result strong { color: #fff; font-size: 24px; }
+.budget-result span { color: rgba(255,255,255,.72); font-size: 14px; font-weight: 800; }
+.budget-result p { max-width: none; color: rgba(255,255,255,.68); font-size: 14px; }
+.budget-whatsapp { display: inline-flex; min-height: 52px; align-items: center; justify-content: center; padding: 0 18px; }
 
 .benefit-grid, .metric-grid { grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 22px; }
 .benefit-grid div, .metric-grid div {
@@ -448,7 +480,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
 }
 .empty-state strong { color: #fff; font-size: 24px; }
 .empty-state span { max-width: 460px; color: rgba(255,255,255,.68); line-height: 1.55; }
-.empty-state button { min-height: 44px; padding: 0 16px; }
+.empty-state button, .empty-state a { min-height: 44px; align-items: center; justify-content: center; padding: 0 16px; text-decoration: none; }
 .map {
   position: sticky;
   top: 102px;
@@ -635,7 +667,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
 @media (max-width: 900px) {
   .header { width: calc(100% - 20px); }
   .header-cta { display: none; }
-  .hero-inner, .matching, .invest, .tour, .project, .lead { grid-template-columns: 1fr; }
+  .hero-inner, .matching, .budget-lab, .invest, .tour, .project, .lead { grid-template-columns: 1fr; }
   .hero-inner { gap: 16px; padding: 104px 0 42px; }
   .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .best-grid, .cards-grid, .district-grid, .trust-grid, .faq-grid { grid-template-columns: 1fr; }
@@ -685,12 +717,12 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .stats div { border-radius: 15px; padding: 12px; }
   .stats strong { font-size: 21px; line-height: 1.08; }
   .stats span { font-size: 11px; line-height: 1.35; }
-  .choice-grid, .benefit-grid, .metric-grid, .lead-form, .lead-form.compact { grid-template-columns: 1fr; }
+  .choice-grid, .budget-form, .benefit-grid, .metric-grid, .lead-form, .lead-form.compact { grid-template-columns: 1fr; }
   .section { width: min(100% - 24px, 1180px); padding: 54px 0; }
   .section-head { gap: 10px; margin-bottom: 20px; }
   .section h2 { font-size: 32px; line-height: 1.04; }
   .section p { font-size: 15px; line-height: 1.55; }
-  .property-card, .district-card, .matching-panel, .panel, .tour-view, .project-media, .filters, .map, .lead-form { border-radius: 20px; }
+  .property-card, .district-card, .matching-panel, .budget-panel, .panel, .tour-view, .project-media, .filters, .map, .lead-form { border-radius: 20px; }
   .property-card:hover { transform: none; }
   .card-body { gap: 14px; padding: 14px; }
   .card-body h3, .district-card h3 { font-size: 20px; }
@@ -700,7 +732,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .district-card dl { grid-template-columns: 1fr; }
   .price-row, .card-actions { align-items: stretch; flex-direction: column; }
   .card-actions a, .card-actions button { width: 100%; justify-content: center; }
-  .matching-panel, .panel, .lead-form { padding: 16px; }
+  .matching-panel, .budget-panel, .panel, .lead-form { padding: 16px; }
   .choice-grid { gap: 8px; margin-bottom: 16px; }
   .choice-grid button, .toggle, .filter-open { min-height: 44px; border-radius: 14px; }
   .range-row { grid-template-columns: 1fr; }
