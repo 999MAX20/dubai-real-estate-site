@@ -75,6 +75,33 @@
   line-height: 1.55;
 }
 
+.mode-line {
+  display: inline-flex;
+  max-width: 760px;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-top: 20px;
+  padding: 0 15px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.mode-line[data-tone="remote"] {
+  border-color: rgba(52, 211, 153, 0.34);
+  background: rgba(52, 211, 153, 0.11);
+  color: #bbf7d0;
+}
+
+.mode-line[data-tone="error"] {
+  border-color: rgba(248, 113, 113, 0.34);
+  background: rgba(248, 113, 113, 0.11);
+  color: #fecaca;
+}
+
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -111,6 +138,31 @@
   grid-template-columns: minmax(0, 1.1fr) 460px;
   gap: 20px;
   align-items: start;
+}
+
+.auth-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.auth-panel[hidden] {
+  display: none;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 7px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .admin-panel {
@@ -341,6 +393,10 @@
 @media (max-width: 1100px) {
   .admin-hero,
   .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-panel {
     grid-template-columns: 1fr;
   }
 

@@ -7,6 +7,8 @@
     <title>Dubai Estate | Кабинет</title>
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./admin.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./config.js"></script>
   </head>
   <body class="admin-body">
     <header class="admin-topbar">
@@ -25,6 +27,7 @@
           <p class="label">Личный кабинет</p>
           <h1>Управление объектами и фотографиями</h1>
           <p>Добавляйте объекты, загружайте главное фото и галерею, меняйте цену, район, ROI, статус 3D-тура и рассрочку.</p>
+          <div class="mode-line" id="modeLine">Проверка подключения...</div>
         </div>
         <div class="admin-stats">
           <div><strong id="objectCount">0</strong><span>объектов</span></div>
@@ -33,12 +36,24 @@
         </div>
       </section>
 
+      <section class="admin-panel auth-panel" id="authPanel" hidden>
+        <div>
+          <h2>Вход в кабинет</h2>
+          <p>Для общего каталога войдите через Supabase Auth. После входа объекты и фото сохраняются в общей базе и видны всем посетителям.</p>
+        </div>
+        <form class="auth-form" id="authForm">
+          <label>Email<input id="authEmail" type="email" required placeholder="owner@example.com" /></label>
+          <label>Пароль<input id="authPassword" type="password" required placeholder="••••••••" /></label>
+          <button class="admin-primary" type="submit">Войти</button>
+        </form>
+      </section>
+
       <section class="admin-grid" id="objects">
         <div class="admin-panel list-panel">
           <div class="panel-head">
             <div>
               <h2>Объекты</h2>
-              <p>Список синхронизируется с публичным каталогом на этом устройстве.</p>
+              <p id="syncDescription">Список синхронизируется с публичным каталогом.</p>
             </div>
             <button class="admin-primary" id="newObject" type="button">Новый объект</button>
           </div>
@@ -105,9 +120,11 @@
           <p>GitHub Pages не имеет базы данных. Эти кнопки позволяют перенести каталог между браузерами или сохранить резервную копию.</p>
         </div>
         <div class="data-actions">
+          <button class="admin-secondary" id="seedRemote" type="button">Залить демо в базу</button>
           <button class="admin-primary" id="exportData" type="button">Скачать JSON</button>
           <label class="admin-secondary import-label">Загрузить JSON<input id="importData" type="file" accept="application/json" /></label>
           <button class="admin-danger" id="resetData" type="button">Сбросить каталог</button>
+          <button class="admin-secondary" id="logoutButton" type="button" hidden>Выйти</button>
         </div>
       </section>
     </main>
