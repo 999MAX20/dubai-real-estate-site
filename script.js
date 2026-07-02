@@ -226,9 +226,13 @@ function openPropertyModal(id) {
         <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
       </div>
       <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен 3D-тур" : "Просмотр по запросу"}</span></div>
-      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><a class="secondary" href="#catalog">Вернуться в каталог</a></div>
+      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><button class="secondary" type="button" id="modalCatalogButton">Вернуться в каталог</button></div>
     </div>
   `;
+  content.querySelector("#modalCatalogButton")?.addEventListener("click", () => {
+    closePropertyModal();
+    document.querySelector("#catalog")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
   modal.hidden = false;
   document.body.classList.add("modal-open");
 }
@@ -411,6 +415,30 @@ function initLeadForms() {
   });
 }
 
+function initMatchingChoices() {
+  document.querySelectorAll("[data-goal-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const form = button.closest(".matching-panel")?.querySelector("form");
+      const select = form?.querySelector("select");
+      if (!select) return;
+      select.value = button.dataset.goalChoice;
+      document.querySelectorAll("[data-goal-choice]").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      form.querySelector('input[placeholder="от $180 000"]')?.focus();
+    });
+  });
+}
+
+function initCatalogFilters() {
+  const filterButton = document.querySelector("#filterOpen");
+  const filters = document.querySelector("#catalogFilters");
+  if (!filterButton || !filters) return;
+  filterButton.addEventListener("click", () => {
+    const isOpen = filters.classList.toggle("open");
+    filterButton.setAttribute("aria-expanded", String(isOpen));
+  });
+}
+
 
 document.querySelector("#modalClose").addEventListener("click", closePropertyModal);
 document.querySelector("#modalBackdrop").addEventListener("click", closePropertyModal);
@@ -421,6 +449,8 @@ document.querySelector("#tourLoader").addEventListener("click", loadTour);
 (async function initPublicSite() {
   properties = await loadProperties();
   renderProperties();
+  initMatchingChoices();
+  initCatalogFilters();
   initAssistant();
   initLeadForms();
 })();

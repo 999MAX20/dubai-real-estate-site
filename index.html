@@ -102,10 +102,10 @@
         </div>
         <div class="matching-panel">
           <div class="choice-grid">
-            <button type="button">жить</button>
-            <button type="button">инвестировать</button>
-            <button type="button">сдавать</button>
-            <button type="button">перепродажа</button>
+            <button type="button" data-goal-choice="жить">жить</button>
+            <button type="button" data-goal-choice="инвестировать">инвестировать</button>
+            <button type="button" data-goal-choice="сдавать">сдавать</button>
+            <button type="button" data-goal-choice="перепродажа">перепродажа</button>
           </div>
           <form class="lead-form compact">
             <label>Имя<input placeholder="Ваше имя" /></label>
@@ -182,9 +182,9 @@
           <h2>Каталог объектов</h2>
           <p>Фильтры, карточки и карта работают как главный раздел подбора.</p>
         </div>
-        <button class="filter-open" type="button">Фильтры</button>
+        <button class="filter-open" id="filterOpen" type="button" aria-expanded="false" aria-controls="catalogFilters">Фильтры</button>
         <div class="catalog-grid">
-          <aside class="filters">
+          <aside class="filters" id="catalogFilters">
             <label>Цена от / до <div class="range-row"><input id="priceFrom" type="number" value="180000" min="0" step="10000" /><input id="priceTo" type="number" value="2000000" min="0" step="10000" /></div></label>
             <label>Район <select id="districtFilter"><option>Все районы</option><option>Dubai Marina</option><option>Palm Jumeirah</option><option>Downtown Dubai</option><option>Creek Harbour</option><option>Business Bay</option><option>Dubai Hills</option></select></label>
             <label>Тип объекта <select id="typeFilter"><option>Любой</option><option>Апартаменты</option><option>Вилла</option><option>Пентхаус</option></select></label>
