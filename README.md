@@ -65,7 +65,9 @@ https://toksdstwfpegqbcgreuz.supabase.co
 
 ## Current Features
 
-- Public Supabase-backed shortlist/scenario catalog with filters, map pins and object modal.
+- Public Supabase-backed shortlist/scenario catalog with filters, interactive map pins and object modal.
+- Reference media fallback for objects without real photos, so public cards and modal galleries never look empty.
+- Interactive preview-tour block with scene switching, hotspots, pan controls and mobile swipe.
 - WhatsApp-only forms and CTAs.
 - Shareable object links through `#property-...` URL hashes.
 - Budget calculator with a structured WhatsApp request.

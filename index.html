@@ -83,7 +83,7 @@
         <a href="#catalog">Подборки</a>
         <a href="#invest">Инвестиции</a>
         <a href="#districts">Районы</a>
-        <a href="#tour">3D-туры</a>
+        <a href="#tour">Preview</a>
         <a href="#company">О компании</a>
         <a href="#trust">Доверие</a>
         <a href="#lead">Контакты</a>
@@ -199,14 +199,14 @@
       <section class="section tour" id="tour">
         <div>
           <h2>Смотрите объект до покупки, как будто вы уже внутри.</h2>
-          <p>360° просмотр, переход между комнатами, точки интереса, планировка, вид из окна и переключение день/ночь.</p>
+          <p>Интерактивный preview показывает формат будущего тура: сцены, точки интереса, планировка и вид. Реальный 3D добавляем после получения материалов объекта.</p>
           <div class="actions">
-            <button class="primary" id="loadTour" type="button">Открыть 3D-тур</button>
+            <button class="primary" id="loadTour" type="button">Открыть preview</button>
             <a class="secondary" href="#lead">Оставить заявку</a>
           </div>
         </div>
         <div class="tour-view" id="tourView">
-          <button class="tour-loader" id="tourLoader" type="button">Загрузить 3D-тур</button>
+          <button class="tour-loader" id="tourLoader" type="button">Загрузить preview</button>
           <div class="floorplan"><span></span><span></span><span></span><span></span></div>
         </div>
       </section>
@@ -234,14 +234,14 @@
         <div class="catalog-grid">
           <aside class="filters" id="catalogFilters">
             <label>Цена от / до <div class="range-row"><input id="priceFrom" type="number" value="180000" min="0" step="10000" /><input id="priceTo" type="number" value="2000000" min="0" step="10000" /></div></label>
-            <label>Район <select id="districtFilter"><option>Все районы</option><option>Dubai Marina</option><option>Palm Jumeirah</option><option>Downtown Dubai</option><option>Creek Harbour</option><option>Business Bay</option><option>Dubai Hills</option></select></label>
+            <label>Район <select id="districtFilter"><option>Все районы</option><option>Dubai Marina</option><option>Palm Jumeirah</option><option>Downtown Dubai</option><option>Creek Harbour</option><option>Business Bay</option><option>Dubai Hills</option><option>JVC</option></select></label>
             <label>Тип объекта <select id="typeFilter"><option>Любой</option><option>Апартаменты</option><option>Вилла</option><option>Пентхаус</option></select></label>
             <label>Застройщик <select id="developerFilter"><option>Любой</option><option>Emaar</option><option>Damac</option><option>Ellington</option><option>Sobha</option></select></label>
-            <button class="toggle" id="tourOnly" type="button">✓ с 3D-туром</button>
+            <button class="toggle" id="tourOnly" type="button">✓ с preview</button>
             <button class="toggle" id="installmentOnly" type="button">✓ с рассрочкой</button>
           </aside>
           <div class="cards-grid" id="catalogGrid"></div>
-          <aside class="map" id="mapPins"><div class="map-grid"></div><div class="map-note">Карта помогает понять районы и бюджеты. Финальные адреса проверяем перед отправкой.</div></aside>
+          <aside class="map" id="mapPins"><div class="map-grid"></div><div class="map-note">Карта помогает понять районы и бюджеты. Нажмите на район или точку.</div></aside>
         </div>
       </section>
 
@@ -250,7 +250,7 @@
         <div class="steps-line">
           <div><span>1</span><strong>Консультация</strong></div>
           <div><span>2</span><strong>Подбор объектов</strong></div>
-          <div><span>3</span><strong>Онлайн-просмотр / 3D-тур</strong></div>
+          <div><span>3</span><strong>Онлайн-просмотр / preview</strong></div>
           <div><span>4</span><strong>Бронирование</strong></div>
           <div><span>5</span><strong>Проверка документов</strong></div>
           <div><span>6</span><strong>Оплата</strong></div>
@@ -268,7 +268,7 @@
           <div><strong>Проверка объекта</strong><span>Документы, застройщик, статус сдачи и условия платежного плана.</span></div>
           <div><strong>Прозрачный ROI</strong><span>Расчёт доходности, сценарии аренды и расходы на владение.</span></div>
           <div><strong>Сопровождение сделки</strong><span>Бронирование, KYC, договор, платежи и передача объекта.</span></div>
-          <div><strong>Онлайн-подбор</strong><span>3D-туры, галереи, планировки и короткий список без поездки.</span></div>
+          <div><strong>Онлайн-подбор</strong><span>Preview-туры, галереи, планировки и короткий список без поездки.</span></div>
         </div>
         <div class="faq-grid">
           <details open><summary>Можно ли купить удалённо?</summary><p>Да. Подбор, просмотр, бронирование и часть документов можно пройти онлайн. Перед оплатой проверяются объект, застройщик и условия договора.</p></details>
@@ -326,7 +326,7 @@
         <div class="assistant-chips" aria-label="Быстрые запросы">
           <button type="button" data-assistant-prompt="До $500k">До $500k</button>
           <button type="button" data-assistant-prompt="Для инвестиций">Инвестиции</button>
-          <button type="button" data-assistant-prompt="С 3D-туром">3D-тур</button>
+          <button type="button" data-assistant-prompt="С preview-туром">Preview</button>
           <button type="button" data-assistant-prompt="С рассрочкой">Рассрочка</button>
         </div>
         <form class="assistant-form" id="assistantForm">

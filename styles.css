@@ -377,7 +377,7 @@ body.modal-open { overflow: hidden; }
 .metric-grid strong { display: block; font-size: 28px; }
 .metric-grid span { color: rgba(255,255,255,.62); font-size: 13px; }
 
-.tour-view { position: relative; min-height: 500px; overflow: hidden; }
+.tour-view { position: relative; min-height: 500px; overflow: hidden; touch-action: pan-y; }
 .tour-view::before, .project-media::before {
   position: absolute;
   inset: 0;
@@ -392,6 +392,94 @@ body.modal-open { overflow: hidden; }
   content: "";
   background: radial-gradient(circle at 50% 50%, transparent 0 32%, rgba(229,192,123,.18) 33%, transparent 35%);
   animation: pan 18s linear infinite;
+}
+.tour-view.loaded::before, .tour-view.loaded::after { display: none; }
+.tour-panorama {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  transition: background-position .28s ease, opacity .2s ease;
+}
+.tour-panorama::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(7,16,24,.22), transparent 45%, rgba(7,16,24,.62)),
+    radial-gradient(circle at 50% 50%, transparent 0 34%, rgba(243,217,154,.12) 35%, transparent 37%);
+  pointer-events: none;
+}
+.tour-topline {
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  z-index: 4;
+  display: grid;
+  gap: 4px;
+  max-width: min(360px, calc(100% - 156px));
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 18px;
+  background: rgba(7,16,24,.62);
+  padding: 12px 14px;
+  backdrop-filter: blur(16px);
+}
+.tour-topline strong { color: #fff; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+.tour-topline span { color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.35; }
+.tour-scenes {
+  position: absolute;
+  left: 18px;
+  bottom: 76px;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tour-scenes button, .tour-controls button {
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  background: rgba(7,16,24,.62);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 950;
+  backdrop-filter: blur(16px);
+}
+.tour-scenes button { min-height: 40px; padding: 0 13px; font-size: 12px; }
+.tour-scenes button.active {
+  border-color: rgba(243,217,154,.52);
+  background: rgba(243,217,154,.18);
+  color: var(--gold);
+}
+.tour-controls {
+  position: absolute;
+  right: 18px;
+  bottom: 76px;
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+}
+.tour-controls button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+}
+.tour-caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  background: rgba(7,16,24,.64);
+  padding: 12px 14px;
+  color: rgba(255,255,255,.78);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+  backdrop-filter: blur(16px);
 }
 @keyframes pan {
   from { transform: scale(1.04) translateX(-1.5%); }
@@ -440,6 +528,7 @@ body.modal-open { overflow: hidden; }
   padding: 8px;
 }
 .floorplan span { border: 1px solid rgba(229,192,123,.45); border-radius: 8px; }
+.floorplan span.active { background: rgba(243,217,154,.32); box-shadow: inset 0 0 0 1px rgba(243,217,154,.5); }
 
 .project { align-items: stretch; }
 .project-media { position: relative; min-height: 500px; overflow: hidden; border-radius: 26px; }
@@ -489,7 +578,113 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   background: radial-gradient(circle at 30% 30%, rgba(141,181,201,.24), transparent 22rem), linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.035));
 }
 .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 40px 40px; }
-.pin { position: absolute; z-index: 2; transform: translate(-50%, -50%); border: 0; border-radius: 999px; background: var(--gold); padding: 8px 11px; color: #08111a; font-size: 12px; font-weight: 950; }
+.pin {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 999px;
+  background: rgba(243,217,154,.96);
+  padding: 6px 10px 6px 6px;
+  color: #08111a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+  box-shadow: 0 14px 36px rgba(0,0,0,.26);
+}
+.pin span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: #071018;
+  color: #fff;
+  font-size: 11px;
+}
+.pin em { font-style: normal; }
+.pin.active { outline: 3px solid rgba(243,217,154,.22); transform: translate(-50%, -50%) scale(1.06); }
+.map-districts {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 16px;
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.map-districts::-webkit-scrollbar { display: none; }
+.map-districts button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  background: rgba(7,16,24,.62);
+  color: rgba(255,255,255,.82);
+  cursor: pointer;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 950;
+  backdrop-filter: blur(16px);
+}
+.map-districts button.active {
+  border-color: rgba(243,217,154,.5);
+  background: rgba(243,217,154,.17);
+  color: var(--gold);
+}
+.map-card {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 78px;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 86px minmax(0,1fr);
+  gap: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 18px;
+  background: rgba(7,16,24,.72);
+  padding: 10px;
+  backdrop-filter: blur(18px);
+}
+.map-card img { width: 86px; height: 76px; border-radius: 12px; object-fit: cover; }
+.map-card div { display: grid; min-width: 0; gap: 5px; }
+.map-card strong { overflow: hidden; color: #fff; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.map-card span { color: rgba(255,255,255,.68); font-size: 12px; font-weight: 800; }
+.map-card button {
+  justify-self: start;
+  min-height: 32px;
+  border: 1px solid rgba(243,217,154,.38);
+  border-radius: 999px;
+  background: rgba(243,217,154,.14);
+  color: var(--gold);
+  cursor: pointer;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 950;
+}
+.map-empty {
+  position: absolute;
+  inset: 92px 16px 90px;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 8px;
+  border: 1px dashed rgba(255,255,255,.2);
+  border-radius: 20px;
+  background: rgba(7,16,24,.42);
+  padding: 18px;
+}
+.map-empty strong { color: #fff; font-size: 20px; }
+.map-empty span { color: rgba(255,255,255,.68); line-height: 1.45; }
 .map-note { position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 2; border-radius: 18px; background: rgba(7,16,24,.6); padding: 13px; color: rgba(255,255,255,.76); font-size: 13px; font-weight: 800; }
 .filter-open { display: none; padding: 0 16px; margin-bottom: 16px; }
 
@@ -679,6 +874,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .filter-open { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; width: 100%; }
   .filters { position: relative; top: auto; }
   .map { min-height: 320px; }
+  .map-card { bottom: 82px; }
   .steps-line { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 
@@ -740,7 +936,63 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .filters.open { display: grid; }
   .catalog { width: min(100% - 24px, 1380px); }
   .cards-grid { gap: 14px; }
-  .tour-view, .project-media { min-height: 360px; }
+  .tour-view, .project-media { min-height: 380px; }
+  .tour-topline {
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    max-width: none;
+    border-radius: 16px;
+    padding: 10px 12px;
+  }
+  .tour-scenes {
+    left: 12px;
+    right: 12px;
+    bottom: 118px;
+    gap: 7px;
+  }
+  .tour-scenes button { min-height: 36px; padding: 0 10px; }
+  .tour-controls { right: 12px; bottom: 68px; }
+  .tour-controls button { width: 40px; height: 40px; }
+  .tour-caption {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .hotspot { padding: 7px 9px; font-size: 11px; }
+  .floorplan {
+    top: 100px;
+    right: 12px;
+    width: 96px;
+    height: 76px;
+    border-radius: 14px;
+  }
+  .map {
+    min-height: 470px;
+    border-radius: 20px;
+  }
+  .map-districts { left: 12px; right: 12px; top: 12px; }
+  .map-districts button { min-height: 36px; padding: 0 10px; }
+  .pin { min-height: 34px; padding: 5px 9px 5px 5px; font-size: 11px; }
+  .pin span { width: 22px; height: 22px; font-size: 10px; }
+  .map-card {
+    left: 12px;
+    right: 12px;
+    bottom: 88px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    border-radius: 16px;
+  }
+  .map-card img { width: 72px; height: 68px; }
+  .map-note {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 15px;
+    font-size: 12px;
+  }
+  .map-empty { inset: 76px 12px 84px; }
   .layouts div { grid-template-columns: 1fr; }
   .steps-line { grid-template-columns: 1fr; }
   .steps-line div { min-height: 96px; border-radius: 18px; }
@@ -754,7 +1006,7 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .modal-metrics div, .modal-plan span { border-radius: 14px; padding: 12px; }
   .modal-detail-grid section { border-radius: 14px; padding: 14px; }
   .property-modal { padding: 10px; }
-  .assistant-widget { left: auto; right: 18px; bottom: 82px; justify-items: end; }
+  .assistant-widget { left: auto; right: 18px; bottom: 76px; justify-items: end; }
   .assistant-widget:not(.assistant-ready) { display: none; }
   .assistant-toggle { width: 52px; min-height: 52px; justify-content: center; padding: 0; border-radius: 50%; }
   .assistant-toggle span:not(.assistant-mark) { display: none; }
@@ -764,9 +1016,16 @@ textarea { min-height: 98px; padding: 12px; resize: vertical; }
   .assistant-messages { max-height: min(330px, 45dvh); }
   .assistant-form { grid-template-columns: 1fr; }
   .assistant-form button { width: 100%; }
-  .lead { padding-bottom: 132px; }
+  .lead { padding-bottom: 116px; }
   .contact-strip span { flex: 1 1 calc(50% - 9px); text-align: center; }
-  .sticky-cta { left: 18px; right: 18px; }
+  .sticky-cta {
+    left: auto;
+    right: 18px;
+    bottom: 16px;
+    min-width: 154px;
+    min-height: 48px;
+    padding: 0 18px;
+  }
 }
 
 @media (max-width: 360px) {
