@@ -68,9 +68,10 @@ https://toksdstwfpegqbcgreuz.supabase.co
 - Public Supabase-backed shortlist/scenario catalog with filters, interactive map pins and object modal.
 - Reference media fallback for objects without real photos, so public cards and modal galleries never look empty.
 - Interactive preview-tour block with scene switching, hotspots, pan controls and mobile swipe.
+- Visible catalog freshness marker: updated July 3, 2026.
 - WhatsApp-only forms and CTAs.
 - Shareable object links through `#property-...` URL hashes.
 - Budget calculator with a structured WhatsApp request.
 - District cards with entry budget, fit and risk notes.
 - Mobile-first public layout and mobile-friendly admin rows.
-- SEO basics: canonical URL, OpenGraph/Twitter meta, sitemap, FAQ schema and RealEstateAgent schema.
+- SEO basics: search-focused title/description, OpenGraph/Twitter meta, sitemap, FAQ schema, WebPage schema and RealEstateAgent schema.

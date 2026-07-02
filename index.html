@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Private shortlist недвижимости в Дубае для жизни и инвестиций: бюджет, районы, ROI, рассрочка и сопровождение сделки." />
-    <meta property="og:title" content="Dubai Estate | Недвижимость в Дубае" />
-    <meta property="og:description" content="Апартаменты, виллы и инвестиционные объекты в Dubai Marina, Downtown, Palm Jumeirah, Business Bay и Dubai Hills." />
+    <meta name="description" content="Купить недвижимость в Дубае для жизни и инвестиций: private shortlist квартир, вилл и апартаментов по бюджету, району, ROI, рассрочке и рискам сделки." />
+    <meta name="keywords" content="недвижимость в Дубае, купить квартиру в Дубае, инвестиции в недвижимость Дубай, апартаменты в Дубае, вилла в Дубае, Dubai Marina недвижимость, Downtown Dubai недвижимость" />
+    <meta property="og:title" content="Dubai Estate | Купить недвижимость в Дубае" />
+    <meta property="og:description" content="Private shortlist недвижимости в Дубае: квартиры, виллы и инвестиционные объекты в Dubai Marina, Downtown, Palm Jumeirah, Business Bay и Dubai Hills." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://999max20.github.io/dubai-real-estate-site/" />
     <meta property="og:image" content="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Dubai Estate | Недвижимость в Дубае" />
-    <meta name="twitter:description" content="Private shortlist недвижимости в Дубае: районы, бюджет, ROI, рассрочка и WhatsApp-подбор." />
+    <meta name="twitter:title" content="Dubai Estate | Купить недвижимость в Дубае" />
+    <meta name="twitter:description" content="Private shortlist недвижимости в Дубае: купить квартиру, виллу или апартаменты под бюджет, район, ROI и цель покупки." />
     <link rel="canonical" href="https://999max20.github.io/dubai-real-estate-site/" />
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -29,14 +30,30 @@
             "areaServed": "Dubai",
             "telephone": "+971 50 279 1555",
             "sameAs": ["https://wa.me/971502791555"],
-            "description": "Частный подбор недвижимости в Дубае для жизни и инвестиций: районы, бюджет, сценарии покупки, ROI и рассрочка."
+            "description": "Частный подбор недвижимости в Дубае для жизни и инвестиций: квартиры, виллы, апартаменты, районы, бюджет, сценарии покупки, ROI и рассрочка."
           },
           {
             "@type": "WebSite",
             "@id": "https://999max20.github.io/dubai-real-estate-site/#website",
             "url": "https://999max20.github.io/dubai-real-estate-site/",
             "name": "Dubai Estate",
-            "inLanguage": "ru"
+            "inLanguage": "ru",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://999max20.github.io/dubai-real-estate-site/#catalog",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://999max20.github.io/dubai-real-estate-site/#webpage",
+            "url": "https://999max20.github.io/dubai-real-estate-site/",
+            "name": "Купить недвижимость в Дубае для жизни и инвестиций",
+            "description": "Private shortlist квартир, вилл и апартаментов в Дубае по бюджету, району, ROI и рискам сделки.",
+            "dateModified": "2026-07-03",
+            "inLanguage": "ru",
+            "isPartOf": { "@id": "https://999max20.github.io/dubai-real-estate-site/#website" },
+            "about": ["недвижимость в Дубае", "купить квартиру в Дубае", "инвестиции в недвижимость Дубай", "апартаменты в Дубае"]
           },
           {
             "@type": "FAQPage",
@@ -71,7 +88,7 @@
         ]
       }
     </script>
-    <title>Dubai Estate | Недвижимость в Дубае</title>
+    <title>Купить недвижимость в Дубае | Dubai Estate</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./config.js"></script>
@@ -100,7 +117,7 @@
         <div class="hero-inner">
           <div class="hero-copy">
             <p class="label">Private shortlist / Dubai real estate</p>
-            <h1>Недвижимость в Дубае для жизни и инвестиций</h1>
+            <h1>Купить недвижимость в Дубае для жизни и инвестиций</h1>
             <p>Соберём короткий список актуальных объектов под ваш бюджет, район и цель покупки. Без давления и обещаний наличия до проверки.</p>
             <div class="actions">
               <a class="primary" href="#matching">Получить shortlist</a>
@@ -229,6 +246,11 @@
         <div class="section-head">
           <h2>Сценарии подбора</h2>
           <p>Карточки ниже используются как ориентиры по бюджету и районам. Актуальные варианты проверяются перед отправкой shortlist.</p>
+          <div class="catalog-meta" aria-label="Статус обновления каталога">
+            <span>Обновлено: 3 июля 2026</span>
+            <span>9 сценариев в Supabase</span>
+            <span>real shortlist после проверки наличия</span>
+          </div>
         </div>
         <button class="filter-open" id="filterOpen" type="button" aria-expanded="false" aria-controls="catalogFilters">Фильтры</button>
         <div class="catalog-grid">
@@ -277,6 +299,19 @@
           <details><summary>Как работает рассрочка?</summary><p>Платёжный план зависит от застройщика и стадии проекта: первый взнос, платежи во время строительства и финальный платёж при передаче.</p></details>
           <details><summary>Можно ли получить Golden Visa?</summary><p>Возможность зависит от стоимости объекта и действующих правил. Перед покупкой проверяем порог, тип объекта и требования к оформлению.</p></details>
           <details><summary>Как выбрать район под инвестиции?</summary><p>Смотрим бюджет входа, спрос на аренду, будущую инфраструктуру, ликвидность и конкуренцию в конкретном типе объекта.</p></details>
+        </div>
+      </section>
+
+      <section class="section seo-panel" id="dubai-real-estate">
+        <div>
+          <p class="label">Dubai property search</p>
+          <h2>Популярные запросы по недвижимости в Дубае</h2>
+          <p>Этот лендинг помогает быстро сориентироваться, если вы планируете купить квартиру в Дубае, сравнить апартаменты для аренды, выбрать виллу для жизни или оценить инвестиции в недвижимость Дубая.</p>
+        </div>
+        <div class="seo-grid">
+          <article><strong>Купить квартиру в Дубае</strong><span>Сравниваем бюджет входа, район, площадь, готовность объекта, платежный план и расходы владения.</span></article>
+          <article><strong>Инвестиции в недвижимость Дубай</strong><span>Смотрим rental estimate, ROI, ликвидность района, service charges и сценарий выхода.</span></article>
+          <article><strong>Апартаменты и виллы в Дубае</strong><span>Отделяем объекты для жизни от инвестиционных сценариев: Marina, Downtown, Business Bay, Dubai Hills, Palm Jumeirah и JVC.</span></article>
         </div>
       </section>
 
