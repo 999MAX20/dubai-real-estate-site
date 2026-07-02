@@ -7,6 +7,82 @@ const DEFAULT_PROPERTIES = [
   { id: "demo-6", title: "Dubai Hills Park Gate", district: "Dubai Hills", price: 560000, area: 118, bedrooms: 2, roi: "7.8%", handover: "Q3 2026", installment: true, tour: false, image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85", gallery: [], x: 46, y: 72 },
 ];
 
+const FALLBACK_MEDIA = {
+  "Dubai Marina": [
+    "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
+  ],
+  "Palm Jumeirah": [
+    "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85",
+  ],
+  "Downtown Dubai": [
+    "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+  ],
+  "Creek Harbour": [
+    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1400&q=85",
+  ],
+  "Business Bay": [
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+  ],
+  "Dubai Hills": [
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+  ],
+  JVC: [
+    "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1400&q=85",
+  ],
+  default: [
+    "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+  ],
+};
+
+const TOUR_SCENES = [
+  {
+    name: "Гостиная",
+    image: "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1800&q=85",
+    note: "Объём, свет, видовые окна",
+    hotspots: [
+      { label: "зона отдыха", x: 24, y: 55 },
+      { label: "вид из окна", x: 68, y: 32 },
+      { label: "кухня", x: 47, y: 64 },
+    ],
+  },
+  {
+    name: "Спальня",
+    image: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1800&q=85",
+    note: "Планировка и приватная зона",
+    hotspots: [
+      { label: "гардероб", x: 28, y: 44 },
+      { label: "мастер-зона", x: 55, y: 58 },
+      { label: "балкон", x: 72, y: 38 },
+    ],
+  },
+  {
+    name: "Вид",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1800&q=85",
+    note: "Окружение, этажность, вода/город",
+    hotspots: [
+      { label: "skyline", x: 35, y: 34 },
+      { label: "инфраструктура", x: 58, y: 62 },
+      { label: "дорога", x: 78, y: 72 },
+    ],
+  },
+];
+
 const districts = [
   { name: "Downtown Dubai", description: "Башни, Burj Khalifa, высокий спрос на short-term аренду.", price: "от $420 000", roi: "7-9%", lifestyle: "city luxury", fit: "ликвидность и престиж", risk: "высокий входной бюджет", image: "https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=900&q=85" },
   { name: "Dubai Marina", description: "Вид на воду, прогулочная набережная, стабильная ликвидность.", price: "от $300 000", roi: "8-10%", lifestyle: "waterfront", fit: "аренда и жизнь у воды", risk: "много конкурентов в аренде", image: "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=900&q=85" },
@@ -24,6 +100,8 @@ const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KE
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
 let properties = [];
 let activeAssistantProfile = { budget: null, goal: "", district: "" };
+let activeTourScene = 0;
+let activeTourOffset = 50;
 
 const formatMoney = (value) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value || 0));
 
@@ -31,10 +109,6 @@ function propertyShareUrl(id) {
   const url = new URL(window.location.href);
   url.hash = `property-${id}`;
   return url.toString();
-}
-
-function mediaPlaceholder(title = "Фото по запросу") {
-  return `<div class="media-placeholder"><strong>${escapeHtml(title)}</strong><span>Медиаслот готов: добавьте фото, планировку или 3D-тур в кабинете.</span></div>`;
 }
 
 function normalizeProperty(property, index = 0) {
@@ -82,8 +156,8 @@ async function loadProperties() {
 }
 
 function propertyCard(property) {
-  const image = property.image ? safeImageUrl(property.image) : "";
-  const fallbackImage = safeImageUrl(DEFAULT_PROPERTIES[0].image);
+  const image = primaryImageForProperty(property);
+  const fallbackImage = fallbackImageForProperty(property);
   const title = escapeHtml(property.title);
   const district = escapeHtml(property.district);
   const roi = escapeHtml(property.roi || "ROI");
@@ -94,10 +168,11 @@ function propertyCard(property) {
   return `
     <article class="property-card">
       <div class="card-media">
-        ${image ? `<img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">` : mediaPlaceholder("Фото по запросу")}
+        <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
         <div class="badges">
           <span>пример сценария</span>
-          ${property.tour ? "<span>3D-тур</span>" : ""}
+          ${property.image ? "" : "<span>референс-фото</span>"}
+          ${property.tour ? "<span>preview-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
         </div>
       </div>
@@ -165,18 +240,7 @@ function renderProperties() {
     : emptyState("Каталог пока пуст", "Добавьте объекты в кабинете, и они появятся здесь.", "Открыть кабинет");
   bindPropertyActions(document.querySelector("#catalogGrid"));
   bindPropertyActions(document.querySelector("#bestGrid"));
-  const map = document.querySelector("#mapPins");
-  map.querySelectorAll(".pin").forEach((pin) => pin.remove());
-  filtered.forEach((property) => {
-    const pin = document.createElement("button");
-    pin.className = "pin";
-    pin.type = "button";
-    pin.style.left = `${property.x}%`;
-    pin.style.top = `${property.y}%`;
-    pin.textContent = formatMoney(property.price).replace(",000", "k");
-    pin.addEventListener("click", () => openPropertyModal(property.id));
-    map.appendChild(pin);
-  });
+  renderMap(filtered);
 }
 
 function resetFilters() {
@@ -211,19 +275,161 @@ document.querySelectorAll("#tourOnly, #installmentOnly").forEach((button) => but
   renderProperties();
 }));
 
+function districtNamesFromProperties(list = properties) {
+  return [...new Set(list.map((property) => property.district).filter(Boolean))];
+}
+
+function renderMap(filtered) {
+  const map = document.querySelector("#mapPins");
+  if (!map) return;
+  map.querySelectorAll(".pin, .map-empty, .map-districts, .map-card").forEach((item) => item.remove());
+
+  const districtRail = document.createElement("div");
+  districtRail.className = "map-districts";
+  const allButton = document.createElement("button");
+  allButton.type = "button";
+  allButton.textContent = "Все";
+  allButton.className = (document.querySelector("#districtFilter")?.value || "Все районы") === "Все районы" ? "active" : "";
+  allButton.addEventListener("click", () => setDistrictFilter("Все районы"));
+  districtRail.appendChild(allButton);
+  districtNamesFromProperties(properties).forEach((district) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = district;
+    button.className = document.querySelector("#districtFilter")?.value === district ? "active" : "";
+    button.addEventListener("click", () => setDistrictFilter(district));
+    districtRail.appendChild(button);
+  });
+  map.appendChild(districtRail);
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "map-empty";
+    empty.innerHTML = "<strong>Нет точек на карте</strong><span>Расширьте бюджет или снимите фильтры, чтобы вернуть сценарии.</span>";
+    map.appendChild(empty);
+  }
+
+  filtered.forEach((property, index) => {
+    const pin = document.createElement("button");
+    const clusterOffsetX = (index - (filtered.length - 1) / 2) * 9;
+    const clusterOffsetY = (index % 2 === 0 ? -1 : 1) * 6;
+    pin.className = "pin";
+    pin.type = "button";
+    pin.style.left = `${Math.min(88, Math.max(12, Number(property.x || 50) + clusterOffsetX))}%`;
+    pin.style.top = `${Math.min(82, Math.max(22, Number(property.y || 50) + clusterOffsetY))}%`;
+    pin.setAttribute("aria-label", `${property.title}, ${property.district}, ${formatMoney(property.price)}`);
+    pin.dataset.mapProperty = property.id;
+    pin.innerHTML = `<span>${index + 1}</span><em>${formatMoney(property.price).replace(",000", "k")}</em>`;
+    pin.addEventListener("click", () => selectMapProperty(property));
+    map.appendChild(pin);
+  });
+
+  updateMapNote(filtered.length);
+  if (filtered[0]) selectMapProperty(filtered[0], false);
+}
+
+function setDistrictFilter(district) {
+  const select = document.querySelector("#districtFilter");
+  if (select) select.value = district;
+  document.querySelector("#catalogFilters")?.classList.remove("open");
+  document.querySelector("#filterOpen")?.setAttribute("aria-expanded", "false");
+  renderProperties();
+  document.querySelector("#mapPins")?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function updateMapNote(count) {
+  const note = document.querySelector(".map-note");
+  if (!note) return;
+  note.textContent = count
+    ? `На карте ${count} сценариев. Нажмите на район или точку, чтобы увидеть объект и открыть карточку.`
+    : "Карта помогает понять районы и бюджеты. Расширьте фильтры, чтобы вернуть точки.";
+}
+
+function selectMapProperty(property, focus = true) {
+  const map = document.querySelector("#mapPins");
+  if (!map) return;
+  map.querySelectorAll(".pin").forEach((pin) => pin.classList.toggle("active", pin.dataset.mapProperty === String(property.id)));
+  map.querySelector(".map-card")?.remove();
+  const card = document.createElement("article");
+  card.className = "map-card";
+  card.innerHTML = `
+    <img src="${primaryImageForProperty(property)}" alt="${escapeHtml(property.title)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImageForProperty(property)}';">
+    <div>
+      <strong>${escapeHtml(property.title)}</strong>
+      <span>${escapeHtml(property.district)} · ${formatMoney(property.price)}</span>
+      <button type="button" data-open-property="${escapeHtml(property.id)}">Открыть карточку</button>
+    </div>
+  `;
+  map.appendChild(card);
+  bindPropertyActions(card);
+  if (focus) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
 function loadTour() {
   const tourView = document.querySelector("#tourView");
+  if (!tourView) return;
   tourView.classList.add("loaded");
-  document.querySelector("#tourLoader")?.remove();
-  if (tourView.querySelector(".hotspot")) return;
-  ["Гостиная", "Вид из окна", "Кухня"].forEach((label, index) => {
+  renderTourScene();
+}
+
+function renderTourScene() {
+  const tourView = document.querySelector("#tourView");
+  if (!tourView) return;
+  const scene = TOUR_SCENES[activeTourScene];
+  tourView.innerHTML = `
+    <div class="tour-panorama" style="background-image: linear-gradient(110deg, rgba(7,16,24,.05), rgba(7,16,24,.48)), url('${scene.image}'); background-position: ${activeTourOffset}% center;"></div>
+    <div class="tour-topline"><strong>Interactive preview</strong><span>${escapeHtml(scene.note)}</span></div>
+    <div class="tour-scenes" role="tablist" aria-label="Сцены preview-тура">
+      ${TOUR_SCENES.map((item, index) => `<button type="button" class="${index === activeTourScene ? "active" : ""}" data-tour-scene="${index}">${escapeHtml(item.name)}</button>`).join("")}
+    </div>
+    <div class="tour-controls">
+      <button type="button" data-tour-pan="-10" aria-label="Повернуть влево">‹</button>
+      <button type="button" data-tour-pan="10" aria-label="Повернуть вправо">›</button>
+    </div>
+    <div class="tour-caption">Preview показывает формат: сцены, точки интереса и план. Реальный 3D-тур добавляется после получения материалов объекта.</div>
+    <div class="floorplan"><span class="${activeTourScene === 0 ? "active" : ""}"></span><span class="${activeTourScene === 1 ? "active" : ""}"></span><span class="${activeTourScene === 2 ? "active" : ""}"></span><span></span></div>
+  `;
+  scene.hotspots.forEach((item) => {
     const hotspot = document.createElement("span");
     hotspot.className = "hotspot";
-    hotspot.textContent = label;
-    hotspot.style.left = `${[18, 62, 47][index]}%`;
-    hotspot.style.top = `${[38, 28, 67][index]}%`;
+    hotspot.textContent = item.label;
+    hotspot.style.left = `${item.x}%`;
+    hotspot.style.top = `${item.y}%`;
     tourView.appendChild(hotspot);
   });
+  tourView.querySelectorAll("[data-tour-scene]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeTourScene = Number(button.dataset.tourScene || 0);
+      activeTourOffset = 50;
+      renderTourScene();
+    });
+  });
+  tourView.querySelectorAll("[data-tour-pan]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeTourOffset = Math.min(100, Math.max(0, activeTourOffset + Number(button.dataset.tourPan || 0)));
+      renderTourScene();
+    });
+  });
+  bindTourDrag(tourView);
+}
+
+function bindTourDrag(tourView) {
+  const panorama = tourView.querySelector(".tour-panorama");
+  if (!panorama) return;
+  let startX = null;
+  panorama.onpointerdown = (event) => {
+    startX = event.clientX;
+    panorama.setPointerCapture?.(event.pointerId);
+  };
+  panorama.onpointerup = (event) => {
+    if (startX === null) return;
+    const delta = event.clientX - startX;
+    if (Math.abs(delta) > 18) {
+      activeTourOffset = Math.min(100, Math.max(0, activeTourOffset - Math.round(delta / 8)));
+      renderTourScene();
+    }
+    startX = null;
+  };
 }
 
 function budgetProfile(budget, goal) {
@@ -306,6 +512,20 @@ function safeImageUrl(value) {
   return /^https?:\/\//i.test(url) ? escapeHtml(url) : DEFAULT_PROPERTIES[0].image;
 }
 
+function mediaSetForProperty(property) {
+  return FALLBACK_MEDIA[property.district] || FALLBACK_MEDIA.default;
+}
+
+function fallbackImageForProperty(property, offset = 0) {
+  const media = mediaSetForProperty(property);
+  const seed = String(property.id || property.title || property.district || "").split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return safeImageUrl(media[(seed + offset) % media.length]);
+}
+
+function primaryImageForProperty(property) {
+  return property.image ? safeImageUrl(property.image) : fallbackImageForProperty(property);
+}
+
 function whatsappLink(message = "") {
   const text = message ? `?text=${encodeURIComponent(message)}` : "";
   return `${WHATSAPP_URL}${text}`;
@@ -317,9 +537,9 @@ function propertyById(id) {
 }
 
 function modalGallery(property) {
-  const images = [property.image, ...(property.gallery || [])].filter(Boolean);
-  const fallbackImage = safeImageUrl(DEFAULT_PROPERTIES[0].image);
-  return images.length ? images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">`).join("") : `<img src="${fallbackImage}" alt="${escapeHtml(property.title)}" loading="lazy">`;
+  const fallbackImage = fallbackImageForProperty(property);
+  const images = [primaryImageForProperty(property), ...(property.gallery || []).filter(Boolean), ...mediaSetForProperty(property)].slice(0, 4);
+  return images.map((image) => `<img src="${safeImageUrl(image)}" alt="${escapeHtml(property.title)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">`).join("");
 }
 
 function propertyHighlights(property) {
@@ -356,7 +576,7 @@ function openPropertyModal(id) {
         <div><strong>${property.bedrooms === 0 ? "студия" : `${escapeHtml(property.bedrooms)} спальни`}</strong><span>планировка</span></div>
         <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
       </div>
-      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен 3D-тур" : "Просмотр по запросу"}</span></div>
+      <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен preview-тур" : "Просмотр по запросу"}</span></div>
       <div class="modal-detail-grid">
         <section>
           <h3>Почему стоит смотреть</h3>
@@ -450,7 +670,7 @@ function getAssistantMatches(query) {
 
   if (budget) matches = matches.filter((item) => item.price <= budget);
   if (knownDistrict) matches = matches.filter((item) => item.district === knownDistrict);
-  if (lower.includes("3d") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
+  if (lower.includes("3d") || lower.includes("preview") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
   if (lower.includes("расср")) matches = matches.filter((item) => item.installment);
   if (lower.includes("готов")) matches = matches.filter((item) => String(item.handover).toLowerCase().includes("готов"));
   if (lower.includes("вилл")) matches = matches.filter((item) => String(item.type).toLowerCase().includes("вилл"));
@@ -547,7 +767,7 @@ function initAssistant() {
     panel.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
     if (!document.querySelector("#assistantMessages")?.children.length) {
-      appendAssistantMessage("assistant", "Я здесь, если нужен быстрый фильтр по бюджету, району, 3D-турам или рассрочке. Сам не всплываю и не отвлекаю.");
+      appendAssistantMessage("assistant", "Я здесь, если нужен быстрый фильтр по бюджету, району, preview-турам или рассрочке. Сам не всплываю и не отвлекаю.");
     }
   };
   const closeAssistant = () => {
