@@ -1,5 +1,4 @@
 const STORAGE_KEY = "dubaiEstateProperties";
-const LEADS_STORAGE_KEY = "dubaiEstateLeads";
 const STORAGE_BUCKET = (window.DUBAI_ESTATE_CONFIG || {}).STORAGE_BUCKET || "property-media";
 
 const defaults = [
@@ -38,7 +37,6 @@ const fields = {
 };
 
 let properties = [];
-let leads = [];
 let session = null;
 let localAdminUnlocked = sessionStorage.getItem("dubaiEstateAdminUnlocked") === "true";
 let currentMainImage = "";
@@ -151,7 +149,6 @@ function updateStats() {
   document.querySelector("#objectCount").textContent = properties.length;
   document.querySelector("#tourCount").textContent = properties.filter((item) => item.tour).length;
   document.querySelector("#installmentCount").textContent = properties.filter((item) => item.installment).length;
-  document.querySelector("#leadCount").textContent = leads.length;
 }
 
 function updateAuthUi() {
@@ -164,57 +161,12 @@ function updateAuthUi() {
   document.querySelector("#objects").hidden = !canUseAdmin();
   document.querySelector("#editor").hidden = !canUseAdmin();
   document.querySelector("#data").hidden = !canUseAdmin();
-  document.querySelector("#leads").hidden = !canUseAdmin();
   document.querySelector("#syncDescription").textContent = supabaseClient
     ? (session?.user ? "Список синхронизируется с общей Supabase базой." : "Сейчас открыт локальный черновик. Общая база доступна после Supabase Auth.")
     : "Список синхронизируется с публичным каталогом на этом устройстве.";
 }
 
 
-function loadLocalLeads() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(LEADS_STORAGE_KEY) || "[]");
-    return Array.isArray(stored) ? stored : [];
-  } catch {
-    return [];
-  }
-}
-
-async function loadLeads() {
-  if (isRemoteWritable()) {
-    const { data, error } = await supabaseClient
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(100);
-    if (!error) {
-      leads = data || [];
-      return;
-    }
-    setMode(`Заявки пока читаются локально: ${error.message}`, "error");
-  }
-  leads = loadLocalLeads();
-}
-
-function renderLeads() {
-  const rows = document.querySelector("#leadRows");
-  if (!rows) return;
-  rows.innerHTML = leads.map((lead) => {
-    const date = lead.created_at ? new Date(lead.created_at).toLocaleString("ru-RU") : "";
-    const contact = [lead.name, lead.phone].filter(Boolean).join(" · ") || "-";
-    const budgetGoal = [lead.budget, lead.goal, lead.property_title].filter(Boolean).join(" · ") || "-";
-    return `
-      <tr>
-        <td>${escapeHtml(date)}</td>
-        <td>${escapeHtml(contact)}</td>
-        <td>${escapeHtml(budgetGoal)}</td>
-        <td>${escapeHtml(lead.source || "site")}</td>
-        <td>${escapeHtml(lead.message || "")}</td>
-      </tr>
-    `;
-  }).join("");
-  updateStats();
-}
 
 function renderRows() {
   const rows = document.querySelector("#objectRows");
@@ -416,7 +368,6 @@ form.addEventListener("submit", async (event) => {
       saveLocalProperties();
     }
     renderRows();
-    renderLeads();
     resetForm();
   } catch (error) {
     setMode(`Сохранение не прошло: ${error.message}`, "error");
@@ -426,9 +377,7 @@ form.addEventListener("submit", async (event) => {
 
 async function refreshAdminData() {
   await loadProperties();
-  await loadLeads();
   renderRows();
-  renderLeads();
 }
 
 authForm.addEventListener("submit", async (event) => {
@@ -480,7 +429,6 @@ document.querySelector("#logoutButton").addEventListener("click", async () => {
   await refreshAdminData();
 });
 
-document.querySelector("#refreshLeads").addEventListener("click", async () => { await loadLeads(); renderLeads(); });
 document.querySelector("#newObject").addEventListener("click", resetForm);
 document.querySelector("#resetForm").addEventListener("click", resetForm);
 
@@ -507,7 +455,6 @@ document.querySelector("#importData").addEventListener("change", async (event) =
     saveLocalProperties();
   }
   renderRows();
-  renderLeads();
   resetForm();
 });
 
