@@ -15,7 +15,6 @@ const districts = [
 ];
 
 const STORAGE_KEY = "dubaiEstateProperties";
-const LEADS_STORAGE_KEY = "dubaiEstateLeads";
 const WHATSAPP_NUMBER = "971502791555";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 const config = window.DUBAI_ESTATE_CONFIG || {};
@@ -227,13 +226,9 @@ function openPropertyModal(id) {
         <div><strong>${escapeHtml(property.roi || "по запросу")}</strong><span>ROI</span></div>
       </div>
       <div class="modal-plan"><span>${details}</span><span>${property.installment ? "Есть рассрочка" : "Оплата по запросу"}</span><span>${property.tour ? "Доступен 3D-тур" : "Просмотр по запросу"}</span></div>
-      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><button class="secondary" type="button" id="modalLeadButton">Сохранить заявку</button></div>
+      <div class="actions"><a class="primary" href="${whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`)}" target="_blank" rel="noreferrer">Запросить расчёт</a><a class="secondary" href="#catalog">Вернуться в каталог</a></div>
     </div>
   `;
-  content.querySelector("#modalLeadButton")?.addEventListener("click", () => {
-    saveLead({ source: "property_modal", property_id: property.id, property_title: property.title, message: `Интерес к объекту ${property.title}` });
-    window.open(whatsappLink(`Здравствуйте! Хочу получить расчёт по объекту ${property.title}.`), "_blank", "noopener,noreferrer");
-  });
   modal.hidden = false;
   document.body.classList.add("modal-open");
 }
@@ -243,26 +238,6 @@ function closePropertyModal() {
   document.body.classList.remove("modal-open");
 }
 
-function fallbackLead(payload) {
-  const stored = JSON.parse(localStorage.getItem(LEADS_STORAGE_KEY) || "[]");
-  stored.unshift({ ...payload, created_at: new Date().toISOString() });
-  localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(stored.slice(0, 100)));
-}
-
-async function saveLead(payload) {
-  const lead = { ...payload, created_at: new Date().toISOString() };
-  if (!supabaseClient) {
-    fallbackLead(lead);
-    return { local: true };
-  }
-  const { error } = await supabaseClient.from("leads").insert(lead);
-  if (error) {
-    console.warn("Lead save failed, using local fallback", error);
-    fallbackLead(lead);
-    return { local: true, error };
-  }
-  return { remote: true };
-}
 
 function assistantPropertyLine(property) {
   const details = [property.district, property.bedrooms === 0 ? "студия" : `${property.bedrooms} спальни`, property.handover].filter(Boolean).join(" · ");
@@ -366,13 +341,10 @@ function appendAssistantMessage(role, text, items = []) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-async function askAssistant(query) {
+function askAssistant(query) {
   appendAssistantMessage("user", query);
   const reply = assistantReply(query);
   appendAssistantMessage("assistant", reply.text, reply.items);
-  if (reply.items.length && activeAssistantProfile.budget && activeAssistantProfile.goal && activeAssistantProfile.district) {
-    await saveLead({ source: "assistant", budget: formatMoney(activeAssistantProfile.budget), goal: activeAssistantProfile.goal, message: `Помощник: ${query}`, property_title: reply.items.map((item) => item.title).join(", ") });
-  }
 }
 
 function initAssistant() {
@@ -427,11 +399,10 @@ function buildLeadMessageFromFields(values) {
 
 function initLeadForms() {
   document.querySelectorAll("form:not(#assistantForm)").forEach((form) => {
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
       const fields = collectLeadFields(form);
       const message = buildLeadMessageFromFields(fields);
-      await saveLead({ source: form.closest("section")?.id || "form", name: fields["Имя"] || "", phone: fields["Телефон"] || fields["WhatsApp"] || "", budget: fields["Бюджет"] || "", goal: fields["Цель покупки"] || "", message, fields });
       window.open(whatsappLink(message), "_blank", "noopener,noreferrer");
     });
   });
