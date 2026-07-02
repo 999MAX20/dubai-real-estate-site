@@ -10,7 +10,7 @@ const defaults = [
 const config = window.DUBAI_ESTATE_CONFIG || {};
 const hasSupabaseConfig = Boolean(config.SUPABASE_URL && config.SUPABASE_ANON_KEY && window.supabase);
 const supabaseClient = hasSupabaseConfig ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
-const localAdminEmail = config.ADMIN_EMAIL || "admin@dubai-estate.local";
+const localAdminEmail = config.ADMIN_EMAIL || "admin2@dubai-estate.com";
 const localAdminPassword = config.ADMIN_PASSWORD || "Dubai2026!";
 const adminEmailConfirmationMessage = "Admin user exists, but Supabase email confirmation is still required. Confirm it in Supabase Auth or rerun SUPABASE_SETUP.sql, then sign in again.";
 
