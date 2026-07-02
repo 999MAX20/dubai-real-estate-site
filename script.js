@@ -8,10 +8,12 @@ const DEFAULT_PROPERTIES = [
 ];
 
 const districts = [
-  { name: "Downtown Dubai", description: "Башни, Burj Khalifa, высокий спрос на short-term аренду.", price: "от $420 000", roi: "7-9%", lifestyle: "city luxury", image: "https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=900&q=85" },
-  { name: "Dubai Marina", description: "Вид на воду, прогулочная набережная, стабильная ликвидность.", price: "от $300 000", roi: "8-10%", lifestyle: "waterfront", image: "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=900&q=85" },
-  { name: "Palm Jumeirah", description: "Виллы и резиденции у моря для жизни и премиальной аренды.", price: "от $850 000", roi: "5-7%", lifestyle: "beachfront", image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=900&q=85" },
-  { name: "JVC", description: "Рациональный входной бюджет и высокий спрос среди арендаторов.", price: "от $180 000", roi: "8-12%", lifestyle: "family", image: "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=900&q=85" },
+  { name: "Downtown Dubai", description: "Башни, Burj Khalifa, высокий спрос на short-term аренду.", price: "от $420 000", roi: "7-9%", lifestyle: "city luxury", fit: "ликвидность и престиж", risk: "высокий входной бюджет", image: "https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dubai Marina", description: "Вид на воду, прогулочная набережная, стабильная ликвидность.", price: "от $300 000", roi: "8-10%", lifestyle: "waterfront", fit: "аренда и жизнь у воды", risk: "много конкурентов в аренде", image: "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=900&q=85" },
+  { name: "Palm Jumeirah", description: "Виллы и резиденции у моря для жизни и премиальной аренды.", price: "от $850 000", roi: "5-7%", lifestyle: "beachfront", fit: "премиальная жизнь", risk: "дороже обслуживание", image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=900&q=85" },
+  { name: "JVC", description: "Рациональный входной бюджет и высокий спрос среди арендаторов.", price: "от $180 000", roi: "8-12%", lifestyle: "family", fit: "порог входа и ROI", risk: "качество зависит от проекта", image: "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=900&q=85" },
+  { name: "Business Bay", description: "Деловой район рядом с Downtown и каналом.", price: "от $220 000", roi: "7-10%", lifestyle: "business", fit: "аренда для специалистов", risk: "важны вид и шум", image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dubai Hills", description: "Зелёный семейный район с парками, школами и моллом.", price: "от $390 000", roi: "6-8%", lifestyle: "family premium", fit: "семья и долгий горизонт", risk: "не всегда максимум ROI", image: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=85" },
 ];
 
 const STORAGE_KEY = "dubaiEstateProperties";
@@ -29,6 +31,10 @@ function propertyShareUrl(id) {
   const url = new URL(window.location.href);
   url.hash = `property-${id}`;
   return url.toString();
+}
+
+function mediaPlaceholder(title = "Фото по запросу") {
+  return `<div class="media-placeholder"><strong>${escapeHtml(title)}</strong><span>Медиаслот готов: добавьте фото, планировку или 3D-тур в кабинете.</span></div>`;
 }
 
 function normalizeProperty(property, index = 0) {
@@ -76,7 +82,7 @@ async function loadProperties() {
 }
 
 function propertyCard(property) {
-  const image = safeImageUrl(property.image || DEFAULT_PROPERTIES[0].image);
+  const image = property.image ? safeImageUrl(property.image) : "";
   const fallbackImage = safeImageUrl(DEFAULT_PROPERTIES[0].image);
   const title = escapeHtml(property.title);
   const district = escapeHtml(property.district);
@@ -88,8 +94,9 @@ function propertyCard(property) {
   return `
     <article class="property-card">
       <div class="card-media">
-        <img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">
+        ${image ? `<img src="${image}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}';">` : mediaPlaceholder("Фото по запросу")}
         <div class="badges">
+          <span>пример сценария</span>
           ${property.tour ? "<span>3D-тур</span>" : ""}
           ${property.installment ? "<span>Рассрочка</span>" : ""}
         </div>
@@ -98,18 +105,21 @@ function propertyCard(property) {
         <div><p class="location">${district}</p><h3>${title}</h3></div>
         <div class="price-row"><strong>${formatMoney(property.price)}</strong><span>${roi} ROI</span></div>
         <div class="specs"><span>${area} м2</span><span>${bedrooms}</span><span>${handover}</span></div>
-        <div class="card-actions"><button class="primary" type="button" data-open-property="${id}">Подробнее</button><a class="secondary" href="${whatsappLink(`Здравствуйте! Интересует объект ${property.title}.`) }" target="_blank" rel="noreferrer">WhatsApp</a></div>
+        <div class="card-actions"><button class="primary" type="button" data-open-property="${id}">Подробнее</button><a class="secondary" href="${whatsappLink(`Здравствуйте! Хочу shortlist по сценарию: ${property.title}. Бюджет около ${formatMoney(property.price)}, район ${property.district}.`) }" target="_blank" rel="noreferrer">WhatsApp</a></div>
       </div>
     </article>
   `;
 }
 
 function emptyState(title, text, action = "Сбросить фильтры") {
+  const control = action === "Открыть кабинет"
+    ? `<a class="secondary" href="./admin.html">${escapeHtml(action)}</a>`
+    : `<button class="secondary" type="button" data-reset-filters>${escapeHtml(action)}</button>`;
   return `
     <div class="empty-state">
       <strong>${escapeHtml(title)}</strong>
       <span>${escapeHtml(text)}</span>
-      <button class="secondary" type="button" data-reset-filters>${escapeHtml(action)}</button>
+      ${control}
     </div>
   `;
 }
@@ -188,8 +198,9 @@ document.querySelector("#districtGrid").innerHTML = districts.map((district) => 
       <dl>
         <div><dt>Средняя цена</dt><dd>${district.price}</dd></div>
         <div><dt>Доходность</dt><dd>${district.roi}</dd></div>
-        <div><dt>Lifestyle</dt><dd>${district.lifestyle}</dd></div>
+        <div><dt>Подходит</dt><dd>${district.fit}</dd></div>
       </dl>
+      <div class="district-risk"><strong>Риск:</strong> ${district.risk}</div>
     </div>
   </article>
 `).join("");
@@ -213,6 +224,71 @@ function loadTour() {
     hotspot.style.top = `${[38, 28, 67][index]}%`;
     tourView.appendChild(hotspot);
   });
+}
+
+function budgetProfile(budget, goal) {
+  if (budget < 250000) {
+    return {
+      title: "Рациональный вход",
+      areas: "JVC, Business Bay, отдельные студии в новых районах",
+      type: "студия или компактные 1 bedroom",
+      note: goal === "жить" ? "Для жизни лучше проверить транспорт и инфраструктуру вокруг дома." : "Для инвестиций важны service charges и реальная аренда в конкретной башне.",
+    };
+  }
+  if (budget < 600000) {
+    return {
+      title: "Сбалансированный shortlist",
+      areas: "Dubai Marina, Business Bay, Dubai Hills, Creek Harbour",
+      type: "1-2 bedroom или объект с рассрочкой",
+      note: goal === "перепродажа" ? "Смотреть проекты с сильным застройщиком и понятным графиком платежей." : "Можно сравнить готовые объекты и off-plan с платежным планом.",
+    };
+  }
+  if (budget < 1200000) {
+    return {
+      title: "Премиальный выбор",
+      areas: "Downtown Dubai, Dubai Marina, Dubai Hills, Palm Jumeirah",
+      type: "2-3 bedroom, видовые апартаменты или townhouse",
+      note: "Ключевые параметры: вид, этаж, бренд здания, расходы владения и ликвидность выхода.",
+    };
+  }
+  return {
+    title: "Prime-сценарий",
+    areas: "Palm Jumeirah, Downtown Dubai, Dubai Hills, waterfront-проекты",
+    type: "вилла, penthouse или крупная branded residence",
+    note: "Нужно отдельно проверять юридический статус, сервисные платежи и сравнительные сделки по району.",
+  };
+}
+
+function updateBudgetCalculator() {
+  const budget = Number(document.querySelector("#budgetValue")?.value || 0);
+  const downPayment = Number(document.querySelector("#downPayment")?.value || 0);
+  const goal = document.querySelector("#budgetGoal")?.value || "инвестировать";
+  const profile = budgetProfile(budget, goal);
+  const firstPayment = Math.round(budget * (downPayment / 100));
+  const result = document.querySelector("#budgetResult");
+  const message = [
+    "Здравствуйте! Хочу shortlist по бюджету.",
+    `Бюджет: ${formatMoney(budget)}`,
+    `Первый взнос: ${downPayment}% (${formatMoney(firstPayment)})`,
+    `Цель: ${goal}`,
+    `Ориентир районов: ${profile.areas}`,
+    `Тип объекта: ${profile.type}`,
+  ].join("\n");
+  result.innerHTML = `
+    <strong>${escapeHtml(profile.title)}</strong>
+    <span>Первый взнос: ${formatMoney(firstPayment)}</span>
+    <span>Районы: ${escapeHtml(profile.areas)}</span>
+    <span>Тип: ${escapeHtml(profile.type)}</span>
+    <p>${escapeHtml(profile.note)}</p>
+  `;
+  document.querySelector("#budgetWhatsapp").href = whatsappLink(message);
+}
+
+function initBudgetCalculator() {
+  const form = document.querySelector("#budgetForm");
+  if (!form) return;
+  form.querySelectorAll("input, select").forEach((field) => field.addEventListener("input", updateBudgetCalculator));
+  updateBudgetCalculator();
 }
 
 function escapeHtml(value) {
@@ -508,7 +584,13 @@ function collectFormFields(form) {
 }
 
 function buildWhatsappMessage(values) {
-  return ["Здравствуйте! Хочу получить подборку недвижимости в Дубае.", ...Object.entries(values).map(([key, value]) => `${key}: ${value}`)].join("\n");
+  const lines = [
+    "Здравствуйте! Хочу получить актуальный shortlist недвижимости в Дубае.",
+    "Формат: короткая подборка под бюджет, район и цель покупки.",
+  ];
+  Object.entries(values).forEach(([key, value]) => lines.push(`${key}: ${value}`));
+  if (!values["Комментарий"]) lines.push("Комментарий: прошу прислать 3-5 вариантов и отметить риски по району/проекту.");
+  return lines.join("\n");
 }
 
 function initWhatsappForms() {
@@ -562,6 +644,7 @@ document.querySelector("#tourLoader").addEventListener("click", loadTour);
   renderProperties();
   openHashProperty();
   initMatchingChoices();
+  initBudgetCalculator();
   initCatalogFilters();
   initAssistant();
   initWhatsappForms();

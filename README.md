@@ -65,8 +65,10 @@ https://toksdstwfpegqbcgreuz.supabase.co
 
 ## Current Features
 
-- Public Supabase-backed catalog with filters, map pins and object modal.
+- Public Supabase-backed shortlist/scenario catalog with filters, map pins and object modal.
 - WhatsApp-only forms and CTAs.
 - Shareable object links through `#property-...` URL hashes.
+- Budget calculator with a structured WhatsApp request.
+- District cards with entry budget, fit and risk notes.
 - Mobile-first public layout and mobile-friendly admin rows.
 - SEO basics: canonical URL, OpenGraph/Twitter meta, sitemap, FAQ schema and RealEstateAgent schema.
