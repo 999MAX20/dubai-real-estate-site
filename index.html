@@ -189,6 +189,33 @@
       </section>
     </main>
 
+    <section class="assistant-widget" id="estateAssistant" aria-label="Помощник по подбору недвижимости">
+      <button class="assistant-toggle" id="assistantToggle" type="button" aria-expanded="false" aria-controls="assistantPanel">
+        <span class="assistant-mark" aria-hidden="true"></span>
+        <span>Помощник</span>
+      </button>
+      <div class="assistant-panel" id="assistantPanel" hidden>
+        <div class="assistant-head">
+          <div>
+            <p>Тихий помощник</p>
+            <strong>Подбор без лишних вопросов</strong>
+          </div>
+          <button class="assistant-close" id="assistantClose" type="button" aria-label="Закрыть помощника">×</button>
+        </div>
+        <div class="assistant-messages" id="assistantMessages"></div>
+        <div class="assistant-chips" aria-label="Быстрые запросы">
+          <button type="button" data-assistant-prompt="До $500k">До $500k</button>
+          <button type="button" data-assistant-prompt="Для инвестиций">Инвестиции</button>
+          <button type="button" data-assistant-prompt="С 3D-туром">3D-тур</button>
+          <button type="button" data-assistant-prompt="С рассрочкой">Рассрочка</button>
+        </div>
+        <form class="assistant-form" id="assistantForm">
+          <input id="assistantInput" autocomplete="off" placeholder="Бюджет, район или цель" />
+          <button type="submit">Найти</button>
+        </form>
+      </div>
+    </section>
+
     <a class="sticky-cta" href="https://wa.me/" target="_blank" rel="noreferrer">WhatsApp</a>
     <script src="./script.js"></script>
   </body>

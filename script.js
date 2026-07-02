@@ -141,6 +141,138 @@ function loadTour() {
   });
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  }[char]));
+}
+
+function assistantPropertyLine(property) {
+  const details = [property.district, property.bedrooms === 0 ? "студия" : `${property.bedrooms} спальни`, property.handover].filter(Boolean).join(" · ");
+  const roi = property.roi || "ROI по запросу";
+  return `<article class="assistant-card"><strong>${escapeHtml(property.title)}</strong><span>${escapeHtml(details)}</span><em>${escapeHtml(formatMoney(property.price))} · ${escapeHtml(roi)}</em></article>`;
+}
+
+function parseBudget(query) {
+  const lower = query.toLowerCase().replace(/\s/g, "");
+  const match = lower.match(/(?:до|under|<)\$?(\d+(?:[.,]\d+)?)(k|к|m|млн|million)?|\$(\d+(?:[.,]\d+)?)(k|к|m|млн|million)?|(\d+(?:[.,]\d+)?)(k|к|m|млн|million)/i);
+  if (!match) return null;
+  const rawValue = match[1] || match[3] || match[5];
+  const suffix = match[2] || match[4] || match[6] || "";
+  let value = Number(rawValue.replace(",", "."));
+  if (!Number.isFinite(value)) return null;
+  if (["k", "к"].includes(suffix)) value *= 1000;
+  if (["m", "млн", "million"].includes(suffix)) value *= 1000000;
+  if (!suffix && value < 10000) value *= 1000;
+  return value;
+}
+
+function getAssistantMatches(query) {
+  const lower = query.toLowerCase();
+  let matches = [...properties];
+  const budget = parseBudget(query);
+  const knownDistrict = [...new Set(properties.map((item) => item.district).filter(Boolean))]
+    .find((district) => lower.includes(district.toLowerCase()));
+
+  if (budget) matches = matches.filter((item) => item.price <= budget);
+  if (knownDistrict) matches = matches.filter((item) => item.district === knownDistrict);
+  if (lower.includes("3d") || lower.includes("тур")) matches = matches.filter((item) => item.tour);
+  if (lower.includes("расср")) matches = matches.filter((item) => item.installment);
+  if (lower.includes("готов")) matches = matches.filter((item) => String(item.handover).toLowerCase().includes("готов"));
+  if (lower.includes("вилл")) matches = matches.filter((item) => String(item.type).toLowerCase().includes("вилл"));
+  if (lower.includes("пентха")) matches = matches.filter((item) => String(item.type).toLowerCase().includes("пентха"));
+  if (lower.includes("студ")) matches = matches.filter((item) => item.bedrooms === 0 || String(item.type).toLowerCase().includes("студ"));
+  if (lower.includes("инвест") || lower.includes("roi") || lower.includes("доход")) {
+    matches.sort((a, b) => (parseFloat(b.roi) || 0) - (parseFloat(a.roi) || 0));
+  } else {
+    matches.sort((a, b) => a.price - b.price);
+  }
+  return matches.slice(0, 3);
+}
+
+function assistantReply(query) {
+  const normalized = query.trim();
+  if (!normalized) {
+    return {
+      text: "Напишите бюджет, район или цель покупки. Я подберу 2-3 варианта из текущего каталога.",
+      items: [],
+    };
+  }
+  const matches = getAssistantMatches(normalized);
+  if (!matches.length) {
+    return {
+      text: "По этому запросу в текущем каталоге нет точного совпадения. Лучше оставить заявку: менеджер проверит закрытые предложения и новые старты.",
+      items: [],
+    };
+  }
+  const hasInvestmentIntent = /инвест|roi|доход/i.test(normalized);
+  return {
+    text: hasInvestmentIntent
+      ? "Для инвестиционной цели я бы начал с этих объектов: у них сильнее выглядит связка цены, района и ROI."
+      : "Вот спокойная короткая подборка из текущего каталога. Можно открыть карточки или оставить заявку на точный расчёт.",
+    items: matches,
+  };
+}
+
+function appendAssistantMessage(role, text, items = []) {
+  const messages = document.querySelector("#assistantMessages");
+  if (!messages) return;
+  const message = document.createElement("div");
+  message.className = `assistant-message ${role}`;
+  message.innerHTML = `<p>${escapeHtml(text)}</p>${items.map(assistantPropertyLine).join("")}${role === "assistant" ? '<div class="assistant-links"><a href="#catalog">Открыть каталог</a><a href="https://wa.me/" target="_blank" rel="noreferrer">WhatsApp</a></div>' : ""}`;
+  messages.appendChild(message);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function askAssistant(query) {
+  appendAssistantMessage("user", query);
+  const reply = assistantReply(query);
+  appendAssistantMessage("assistant", reply.text, reply.items);
+}
+
+function initAssistant() {
+  const widget = document.querySelector("#estateAssistant");
+  if (!widget) return;
+  const toggle = document.querySelector("#assistantToggle");
+  const panel = document.querySelector("#assistantPanel");
+  const close = document.querySelector("#assistantClose");
+  const form = document.querySelector("#assistantForm");
+  const input = document.querySelector("#assistantInput");
+
+  const openAssistant = () => {
+    panel.hidden = false;
+    toggle.setAttribute("aria-expanded", "true");
+    if (!document.querySelector("#assistantMessages")?.children.length) {
+      appendAssistantMessage("assistant", "Я здесь, если нужен быстрый фильтр по бюджету, району, 3D-турам или рассрочке. Сам не всплываю и не отвлекаю.");
+    }
+  };
+  const closeAssistant = () => {
+    panel.hidden = true;
+    toggle.setAttribute("aria-expanded", "false");
+  };
+
+  toggle.addEventListener("click", () => (panel.hidden ? openAssistant() : closeAssistant()));
+  close.addEventListener("click", closeAssistant);
+  document.querySelectorAll("[data-assistant-prompt]").forEach((button) => {
+    button.addEventListener("click", () => {
+      openAssistant();
+      askAssistant(button.dataset.assistantPrompt || "");
+    });
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = input.value.trim();
+    if (!query) return;
+    askAssistant(query);
+    input.value = "";
+  });
+}
+
+
 document.querySelector("#loadTour").addEventListener("click", loadTour);
 document.querySelector("#tourLoader").addEventListener("click", loadTour);
 document.querySelectorAll("form").forEach((form) => form.addEventListener("submit", (event) => event.preventDefault()));
@@ -148,4 +280,5 @@ document.querySelectorAll("form").forEach((form) => form.addEventListener("submi
 (async function initPublicSite() {
   properties = await loadProperties();
   renderProperties();
+  initAssistant();
 })();
